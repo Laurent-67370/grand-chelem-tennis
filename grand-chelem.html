@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Chelem 2026 — Tableau Interactif</title>
+<meta name="description" content="Tableau interactif des 4 Grands Chelems 2026. Suivez les résultats, saisissez les scores et simulez les matchs à venir.">
+<meta name="theme-color" id="themeColor" content="#1A0F08">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=700;900&family=DM+Sans:wght=300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clay:#C85B2A;--cll:#E8936A;--cream:#F5EDD8;
+  --dark:#1A0F08;--dm:#2C1A0E;--white:#FEFAF4;
+  --gold:#D4A843;--green:#3a7a32;--greenl:#9de090;
+  /* Variables dynamiques par tournoi */
+  --t-primary:#C85B2A;--t-primary-l:#E8936A;
+  --t-bg:#1A0F08;--t-bg2:#2C1A0E;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(200,91,42,.12) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(200,91,42,.08) 0%,transparent 50%);pointer-events:none;z-index:0;}
+
+
+/* ══ SÉLECTEUR DE TOURNOI ══════════════════════════════ */
+#tournamentSelector{
+  background:rgba(0,0,0,.85);
+  border-bottom:2px solid var(--clay);
+  padding:8px 16px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:200;
+  backdrop-filter:blur(12px);
+}
+.t-label{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);
+  letter-spacing:1.5px;text-transform:uppercase;margin-right:4px;white-space:nowrap;}
+.t-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;border:2px solid transparent;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);
+}
+.t-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+.t-btn.active{color:#fff;border-color:currentColor;}
+.t-btn .t-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+/* Couleurs par tournoi */
+.t-btn[data-t="rg"].active{background:rgba(200,91,42,.2);border-color:#C85B2A;color:#E8936A;}
+.t-btn[data-t="ao"].active{background:rgba(2,136,209,.2);border-color:#0288D1;color:#4FC3F7;}
+.t-btn[data-t="wim"].active{background:rgba(46,125,50,.2);border-color:#2E7D32;color:#81C784;}
+.t-btn[data-t="uso"].active{background:rgba(21,101,192,.2);border-color:#1565C0;color:#64B5F6;}
+/* Couleurs des dots */
+.t-btn[data-t="rg"] .t-dot{background:#C85B2A;}
+.t-btn[data-t="ao"] .t-dot{background:#0288D1;}
+.t-btn[data-t="wim"] .t-dot{background:#2E7D32;}
+.t-btn[data-t="uso"] .t-dot{background:#1565C0;}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:100;
+  padding:10px 16px;
+  border-bottom:1px solid rgba(200,91,42,.3);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  background:rgba(26,15,8,.95);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 2px 20px rgba(0,0,0,.4);
+  transition:padding .2s;
+}
+.rg-logo{width:44px;height:44px;background:var(--clay);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:900;color:var(--white);box-shadow:0 0 20px rgba(200,91,42,.5);flex-shrink:0;}
+.hl{display:flex;align-items:center;gap:12px;}
+.ht h1{font-family:'Playfair Display',serif;font-size:clamp(15px,3vw,24px);font-weight:900;color:var(--white);}
+.ht p{font-size:10px;color:var(--cll);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(200,91,42,.2);border:1px solid var(--clay);padding:4px 11px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:1px;color:var(--cll);}
+.ld{width:6px;height:6px;background:var(--cll);border-radius:50%;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── CONTROLS ── */
+.ctrl{
+  position:sticky;top:57px;z-index:99;
+  padding:8px 16px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(200,91,42,.15);
+  background:rgba(26,15,8,.95);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.sb{position:relative;flex:1;min-width:140px;max-width:240px;}
+.sb input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(200,91,42,.35);color:var(--cream);padding:8px 12px 8px 32px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s,background .2s;}
+.sb input:focus{border-color:var(--clay);background:rgba(200,91,42,.1);}
+.sb input::placeholder{color:rgba(245,237,216,.35);}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:rgba(200,91,42,.7);font-size:13px;}
+.btn{background:rgba(255,255,255,.05);border:1px solid rgba(200,91,42,.25);color:var(--cream);padding:7px 12px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn:hover,.btn.active{background:var(--clay);border-color:var(--clay);color:var(--white);}
+.gbtn{background:rgba(45,90,39,.3);border:1px solid rgba(74,139,66,.4);color:var(--greenl);padding:7px 12px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.gbtn:hover{background:rgba(45,90,39,.6);}
+.rbtn{background:rgba(160,40,40,.2);border:1px solid rgba(200,60,60,.3);color:#f09090;padding:7px 12px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+
+/* ── STATS ── */
+.stats{
+  position:sticky;top:101px;z-index:98;
+  padding:7px 16px;
+  display:flex;gap:14px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(200,91,42,.1);
+  align-items:center;
+  background:rgba(26,15,8,.92);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.sv{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cll);}
+.sl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,237,216,.4);line-height:1.3;}
+.sdv{width:1px;height:28px;background:rgba(200,91,42,.2);}
+
+/* ── BOUTON RETOUR EN HAUT ── */
+#backToTop{
+  position:fixed;bottom:20px;right:16px;z-index:200;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--clay);border:none;
+  color:var(--white);font-size:18px;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(200,91,42,.5);
+  display:none;align-items:center;justify-content:center;
+  transition:opacity .2s,transform .2s;
+}
+#backToTop.visible{display:flex;}
+#backToTop:hover{transform:translateY(-2px);}
+
+/* Compact header au scroll */
+header.compact{padding:6px 16px;}
+header.compact .rg-logo{width:32px;height:32px;font-size:12px;}
+header.compact .ht h1{font-size:13px;}
+header.compact .ht p{display:none;}
+header.compact .live-badge{padding:3px 8px;font-size:9px;}
+
+/* ── DRAW CONTAINER ── */
+.draw-container{position:relative;z-index:5;padding:14px 16px 60px;}
+
+/* ── SEARCH RESULTS ── */
+#searchResults{display:none;}
+#searchResults.visible{display:block;}
+.sr-hd{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.sr-sub{font-size:11px;color:rgba(245,237,216,.45);margin-bottom:14px;}
+.sr-lbl{font-size:9px;color:var(--cll);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;}
+.sr-list{display:flex;flex-direction:column;gap:8px;max-width:480px;}
+.sr-card{background:rgba(255,255,255,.03);border:1px solid rgba(200,91,42,.2);border-radius:9px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.sr-card:hover{border-color:rgba(200,91,42,.5);}
+.sr-rnd{background:rgba(200,91,42,.15);padding:4px 12px;font-size:9px;font-weight:700;color:var(--cll);letter-spacing:1.5px;text-transform:uppercase;}
+.sr-body{padding:10px 13px;display:flex;flex-direction:column;gap:6px;}
+.sr-row{display:flex;align-items:center;gap:8px;}
+.sr-row.won .sr-nm{color:var(--white);font-weight:600;}
+.sr-row.won .sr-sc{color:var(--gold);font-weight:600;}
+.sr-row.lost{opacity:.5;}
+.sr-fl{font-size:15px;line-height:1;}
+.sr-sd{font-size:8px;font-weight:700;color:var(--cll);background:rgba(200,91,42,.2);border-radius:2px;padding:1px 3px;}
+.sr-nm{font-size:12px;color:var(--cream);flex:1;}
+.sr-sc{font-size:10px;color:rgba(245,237,216,.45);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.sr-div{height:1px;background:rgba(200,91,42,.12);}
+.sr-tba{font-size:9px;color:rgba(245,237,216,.3);text-align:center;padding:2px 0;}
+.no-res{text-align:center;padding:36px 20px;color:rgba(245,237,216,.3);font-size:13px;}
+mark.hl{background:rgba(200,91,42,.4);border-radius:2px;color:var(--white);}
+
+/* ── BRACKET TABLE STRUCTURE ── */
+.half-section{margin-bottom:25px;}
+.half-title{font-size:10px;color:var(--cll);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;}
+.bracket-scroll{overflow-x:auto;overflow-y:visible;padding-bottom:8px;}
+.bktable{border-collapse:collapse;white-space:nowrap;min-width:850px;}
+.bkth{background:rgba(200,91,42,.18);border:1px solid rgba(200,91,42,.3);color:rgba(200,91,42,.85);
+  font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:6px 8px;text-align:center;}
+
+/* Styles des cellules */
+.pcol{
+  padding:0;
+  cursor:pointer;
+  border-right:2px solid rgba(200,91,42,.3);
+  border-top:1px solid rgba(200,91,42,.08);
+  border-bottom:1px solid rgba(200,91,42,.08);
+  min-width:160px;max-width:160px;width:160px;
+  vertical-align:middle;
+  transition:background .15s;
+}
+.pcol:hover{background:rgba(200,91,42,.12);border-right-color:rgba(200,91,42,.7);}
+
+.pinner{
+  display:flex;align-items:center;gap:4px;
+  padding:3px 6px 2px;font-size:10.5px;
+  overflow:hidden;
+}
+.pcol.winner-cell .pinner{background:rgba(200,91,42,.06);}
+.pcol.winner-cell .pnm{font-weight:600;color:var(--white);}
+.pcol.tba .pinner{opacity:.5;}
+
+.pseed{font-size:7px;font-weight:700;color:var(--cll);background:rgba(200,91,42,.2);border-radius:2px;padding:1px 3px;min-width:14px;text-align:center;flex-shrink:0;}
+.pflag{font-size:11px;line-height:1;flex-shrink:0;}
+.pnm{flex:1;overflow:hidden;text-overflow:ellipsis;}
+.qtag{font-size:7px;font-weight:700;color:var(--cll);border:1px solid rgba(200,91,42,.3);padding:0px 2px;border-radius:2px;flex-shrink:0;}
+/* Score sous le nom, sur sa propre ligne */
+.psc{
+  display:block;
+  font-size:8.5px;color:var(--gold);
+  font-variant-numeric:tabular-nums;
+  padding:0 6px 3px 24px;
+  line-height:1.3;
+  white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Crochet visuel classique du tennis */
+/* Les joueurs pairs ont une bordure basse, les impairs une bordure haute */
+.bktable tr.r1-p1 .r1col{border-bottom:1px solid rgba(200,91,42,.45);}
+.bktable tr.r2-p1 .r2col{border-bottom:1px solid rgba(200,91,42,.45);}
+.bktable tr.r3-p1 .r3col{border-bottom:1px solid rgba(200,91,42,.45);}
+.bktable tr.r4-p1 .r4col{border-bottom:1px solid rgba(200,91,42,.45);}
+
+.half-sep{height:18px;border-top:1px dashed rgba(200,91,42,.2);border-bottom:1px dashed rgba(200,91,42,.2);display:flex;align-items:center;justify-content:center;color:rgba(245,237,216,.2);font-size:8px;letter-spacing:2px;text-transform:uppercase;margin:6px 0 12px;}
+
+/* ── MODAL SCORE ── */
+.ov{position:fixed;inset:0;background:rgba(26,15,8,.88);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .25s;}
+.ov.open{opacity:1;pointer-events:all;}
+.modal{background:linear-gradient(135deg,#2C1A0E 0%,#1A0F08 100%);border:1px solid rgba(200,91,42,.4);border-radius:13px;padding:22px;max-width:430px;width:92%;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:scale(.9);transition:transform .25s;}
+.ov.open .modal{transform:scale(1);}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+.mrnd{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--cll);font-weight:700;}
+.mx{width:26px;height:26px;background:rgba(255,255,255,.06);border:1px solid rgba(200,91,42,.3);border-radius:4px;color:var(--cream);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.mx:hover{background:var(--clay);}
+.mp{display:flex;align-items:center;gap:8px;padding:9px 11px;background:rgba(255,255,255,.04);border:2px solid rgba(200,91,42,.12);border-radius:7px;cursor:pointer;transition:all .2s;}
+.mp:hover{border-color:rgba(200,91,42,.4);}
+.mp.mw{background:rgba(200,91,42,.12);border-color:var(--clay);}
+.mp.msel{border-color:#4A8B42;background:rgba(45,90,39,.15);}
+.mpfl覆{font-size:18px;line-height:1;}
+.mpnm{flex:1;font-size:13px;font-weight:600;color:var(--white);font-family:'Playfair Display',serif;}
+.mpnat{font-size:9px;color:rgba(245,237,216,.4);text-transform:uppercase;}
+.mpsc{font-size:13px;font-weight:700;color:var(--gold);}
+.mvs{text-align:center;font-size:9px;color:rgba(245,237,216,.25);letter-spacing:2px;margin:4px 0;}
+.sia{margin-top:11px;background:rgba(255,255,255,.03);border:1px solid rgba(200,91,42,.2);border-radius:7px;padding:10px;}
+.sil{font-size:9px;color:rgba(245,237,216,.45);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;}
+.sf{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(200,91,42,.3);color:var(--cream);padding:8px 10px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.sf:focus{border-color:var(--clay);}
+.sf::placeholder{color:rgba(245,237,216,.3);}
+.presets{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.preset{background:rgba(255,255,255,.05);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.65);padding:3px 7px;border-radius:4px;font-size:10px;cursor:pointer;transition:all .15s;}
+.preset:hover{background:rgba(200,91,42,.2);border-color:var(--clay);color:var(--white);}
+.preset.special{border-color:rgba(200,91,42,.4);color:var(--cll);font-weight:600;}
+.wsel{margin-top:12px;}
+.wsl{font-size:9px;color:rgba(245,237,216,.45);margin-bottom:7px;letter-spacing:1px;text-transform:uppercase;}
+.wb{display:flex;gap:7px;}
+.wbtn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.65);padding:8px 6px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;transition:all .2s;text-align:center;}
+.wbtn:hover{border-color:var(--cll);color:var(--cream);}
+.wbtn.sel{background:rgba(45,90,39,.3);border-color:#4A8B42;color:var(--greenl);font-weight:700;}
+.mac{display:flex;gap:7px;margin-top:13px;}
+.msave{flex:1;background:var(--clay);border:none;color:var(--white);padding:10px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.msave:hover{background:var(--clay-dark,#9B3D18);}
+.msave:disabled{opacity:.4;cursor:default;}
+.mdel{background:rgba(160,40,40,.2);border:1px solid rgba(200,60,60,.3);color:#f09090;padding:10px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;}
+.mdel.hidden{display:none;}
+
+/* ── NAVIGATION PREV/NEXT DANS LA MODAL ── */
+.mnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+.mnavbtn{background:rgba(255,255,255,.05);border:1px solid rgba(200,91,42,.25);color:rgba(245,237,216,.6);padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px;}
+.mnavbtn:hover:not(:disabled){background:rgba(200,91,42,.15);border-color:var(--cll);color:var(--cream);}
+.mnavbtn:disabled{opacity:.25;cursor:default;}
+.mnavctr{font-size:9px;color:rgba(245,237,216,.35);text-align:center;flex:1;}
+
+/* ── CLAVIER NUMÉRIQUE MOBILE ── */
+.numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px;}
+.numpad button{background:rgba(255,255,255,.06);border:1px solid rgba(200,91,42,.2);color:var(--cream);padding:9px 4px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif;}
+.numpad button:hover,.numpad button:active{background:rgba(200,91,42,.25);border-color:var(--cll);}
+.numpad .nk-special{background:rgba(200,91,42,.12);color:var(--cll);font-size:11px;}
+.numpad .nk-del{background:rgba(160,40,40,.15);color:#f09090;font-size:14px;}
+.numpad .nk-wide{grid-column:span 2;}
+
+/* ── CHEMIN DU CHAMPION ── */
+#champPanel{display:none;padding:14px 16px 32px;}
+#champPanel.visible{display:block;}
+.champ-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--white);margin-bottom:4px;}
+.champ-sub{font-size:11px;color:rgba(245,237,216,.4);margin-bottom:16px;}
+.champ-card{background:linear-gradient(135deg,rgba(200,91,42,.15),rgba(200,91,42,.05));border:1px solid rgba(200,91,42,.35);border-radius:10px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.champ-round{font-size:8px;font-weight:700;color:var(--cll);letter-spacing:1.5px;text-transform:uppercase;width:60px;flex-shrink:0;}
+.champ-vs{flex:1;}
+.champ-winner{font-size:12px;font-weight:700;color:var(--white);}
+.champ-loser{font-size:11px;color:rgba(245,237,216,.4);}
+.champ-sc{font-size:10px;color:var(--gold);margin-top:2px;}
+.champ-trophy{font-size:28px;text-align:center;margin:10px 0 4px;}
+.champ-pending{background:rgba(255,255,255,.03);border:1px dashed rgba(200,91,42,.2);border-radius:8px;padding:10px;text-align:center;font-size:11px;color:rgba(245,237,216,.35);margin-bottom:6px;}
+.champ-select{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.champ-btn{background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.65);padding:5px 10px;border-radius:20px;font-size:10px;cursor:pointer;transition:all .2s;}
+.champ-btn:hover,.champ-btn.active{background:rgba(200,91,42,.2);border-color:var(--cll);color:var(--cream);}
+
+/* ── MODE PLEIN ÉCRAN ── */
+#btnFS{font-size:14px;}
+body.fullscreen header .ht p{display:none;}
+body.fullscreen .ctrl .gbtn:not(#btnOverview):not(#btnFS){display:none;}
+
+/* ── EXPORT PNG (bouton dans les contrôles) ── */
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(44,26,14,.97);border:1px solid rgba(200,91,42,.5);border-radius:7px;padding:8px 18px;font-size:12px;color:var(--cream);z-index:2000;transition:transform .3s;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+
+.iov{position:fixed;inset:0;background:rgba(26,15,8,.88);z-index:1001;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .25s;}
+.iov.open{opacity:1;pointer-events:all;}
+.imodal{background:linear-gradient(135deg,#2C1A0E 0%,#1A0F08 100%);border:1px solid rgba(200,91,42,.4);border-radius:13px;padding:22px;max-width:500px;width:92%;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.itab{display:flex;gap:4px;margin-bottom:16px;}
+.itabbtn{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.6);padding:7px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;text-align:center;transition:all .2s;}
+.itabbtn.active{background:var(--clay);border-color:var(--clay);color:var(--white);font-weight:600;}
+.ipanel{display:none;}
+.ipanel.active{display:block;}
+.isub{font-size:11px;color:rgba(245,237,216,.4);margin-bottom:10px;line-height:1.5;}
+.ita{width:100%;height:130px;background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.25);color:var(--cream);padding:9px 11px;border-radius:7px;font-family:monospace;font-size:11px;outline:none;resize:vertical;line-height:1.5;}
+.ita:focus{border-color:var(--clay);}
+.imsg{margin-top:7px;font-size:11px;min-height:16px;}
+.imsg.ok{color:var(--greenl);}
+.imsg.err{color:#f09090;}
+.iact{display:flex;gap:7px;margin-top:11px;}
+
+/* SIM MODAL */
+.sov{position:fixed;inset:0;background:rgba(26,15,8,.88);z-index:1002;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;}
+.sov.open{opacity:1;pointer-events:all;}
+.smodal{background:linear-gradient(135deg,#2C1A0E 0%,#1A0F08 100%);border:1px solid rgba(74,139,66,.4);border-radius:13px;padding:22px;max-width:460px;width:92%;box-shadow:0 30px 80px rgba(0,0,0,.6);max-height:80vh;overflow-y:auto;}
+.smatch{background:rgba(255,255,255,.03);border:1px solid rgba(74,139,66,.15);border-radius:6px;padding:7px 11px;display:flex;align-items:center;gap:7px;font-size:11px;margin-bottom:5px;}
+.swn{color:var(--greenl);font-weight:600;flex:1;}
+.sls{color:rgba(245,237,216,.35);}
+.srnd{font-size:8px;color:rgba(74,139,66,.6);letter-spacing:1px;text-transform:uppercase;margin:8px 0 3px;font-weight:700;}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE & ACCESSIBILITÉ
+══════════════════════════════════════════════ */
+
+/* Focus visible pour accessibilité clavier */
+*:focus-visible{outline:2px solid var(--clay);outline-offset:2px;}
+button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-offset:2px;}
+
+/* Touch targets minimum 44px (Apple HIG / WCAG) */
+.btn,.gbtn,.rbtn,.wbtn,.preset,.mx,.msave,.mdel{min-height:36px;}
+.mp{min-height:44px;}
+.ov-match{min-height:44px;}
+
+/* Amélioration lisibilité */
+.mpnm{font-size:14px;}
+.pnm{letter-spacing:0.01em;}
+
+/* ── MOBILE ≤ 480px ── */
+@media(max-width:480px){
+  header{padding:8px 12px;}
+  header.compact{padding:5px 12px;}
+
+  .ctrl{padding:6px 12px;gap:5px;top:50px;}
+  .sb{min-width:120px;}
+  .sb input{font-size:12px;padding:7px 10px 7px 28px;}
+  .btn,.gbtn,.rbtn{padding:6px 9px;font-size:10px;}
+
+  .stats{top:88px;padding:5px 12px;gap:10px;}
+  .sv{font-size:15px;}
+  .sdv{height:22px;}
+
+  .round-stats{top:116px;padding:5px 12px;gap:4px;}
+  .rs-bar{width:30px;}
+  .rs-item{font-size:9px;}
+
+  .draw-container{padding:10px 8px 80px;}
+  #overviewPanel{padding:10px 12px 40px;}
+
+  /* Bracket: réduire les colonnes */
+  .bktable{min-width:600px;}
+  .bkth{font-size:7px;padding:4px 5px;letter-spacing:1px;}
+  .r1col{min-width:120px;max-width:120px;width:120px;}
+  .wcol{min-width:110px;max-width:110px;width:110px;}
+  .pinner{padding:2px 4px;}
+  .pnm{font-size:9.5px;}
+  .psc{font-size:7.5px;padding:0 4px 2px 20px;}
+  .pseed{font-size:6px;padding:1px 2px;}
+
+  /* Modal plein écran sur mobile */
+  .modal,.imodal,.smodal{
+    width:100%;max-width:100%;
+    border-radius:16px 16px 0 0;
+    position:fixed;bottom:0;left:0;right:0;
+    margin:0;
+    max-height:90vh;overflow-y:auto;
+  }
+  .ov{align-items:flex-end;}
+  .iov{align-items:flex-end;}
+  .sov{align-items:flex-end;}
+
+  /* Vue à venir */
+  .ov-match-players{flex-wrap:wrap;gap:6px;}
+  .ov-p{min-width:40%;}
+  .ov-vs{width:100%;text-align:center;order:2;}
+
+  /* Toast en bas, au-dessus du bouton retour */
+  .toast{bottom:70px;font-size:11px;padding:7px 14px;}
+  #backToTop{bottom:16px;right:12px;width:36px;height:36px;font-size:16px;}
+
+  /* Stats heads */
+  .sr-hd{font-size:16px;}
+  .ov-title{font-size:16px;}
+}
+
+/* ── TABLETTE 481–768px ── */
+@media(min-width:481px) and (max-width:768px){
+  header{padding:10px 16px;}
+  .ctrl{padding:8px 16px;top:55px;}
+  .stats{top:94px;}
+  .round-stats{top:124px;}
+  .draw-container{padding:12px 14px 60px;}
+  .modal,.imodal{max-width:480px;}
+}
+
+/* ── GRAND ÉCRAN ≥ 769px ── */
+@media(min-width:769px){
+  .ctrl{top:60px;}
+  .stats{top:100px;}
+  .round-stats{top:134px;}
+  .draw-container{padding:16px 24px 60px;}
+  .modal{max-width:440px;}
+  /* Bracket plus large */
+  .r1col{min-width:165px;max-width:165px;width:165px;}
+  .wcol{min-width:150px;max-width:150px;width:150px;}
+}
+
+/* ── ORIENTATION PAYSAGE MOBILE ── */
+@media(max-height:500px) and (max-width:900px){
+  header{padding:5px 12px;}
+  .ht p{display:none;}
+  .ctrl{top:42px;padding:4px 12px;}
+  .stats{top:76px;padding:4px 12px;}
+  .round-stats{top:102px;}
+  .modal,.imodal,.smodal{
+    max-height:95vh;
+    border-radius:10px;
+    bottom:auto;
+    position:relative;
+  }
+  .ov,.iov,.sov{align-items:center;}
+}
+
+/* ── ACCESSIBILITÉ: préférence contraste élevé ── */
+@media(prefers-contrast:high){
+  .pcol{border:1px solid rgba(200,91,42,.6);}
+  .btn,.gbtn,.rbtn{border-width:2px;}
+  .pnm{color:#fff;}
+}
+
+/* ── PRÉFÉRENCE RÉDUCTION DE MOUVEMENT ── */
+@media(prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important;}
+  .ld{animation:none;}
+}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(44,26,14,.97);border:1px solid rgba(200,91,42,.5);border-radius:7px;padding:8px 18px;font-size:12px;color:var(--cream);z-index:2000;transition:transform .3s;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.green{border-color:rgba(74,139,66,.6);color:var(--greenl);}
+
+/* TOOLTIP */
+.tt{position:fixed;background:rgba(44,26,14,.97);border:1px solid rgba(200,91,42,.4);border-radius:5px;padding:7px 11px;pointer-events:none;z-index:500;max-width:200px;opacity:0;transition:opacity .15s;font-size:11px;}
+.tt.show{opacity:1;}
+.ttn{font-weight:600;color:var(--white);margin-bottom:1px;font-size:12px;}
+.ttd{color:rgba(245,237,216,.5);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(200,91,42,.4);border-radius:2px;}
+
+/* ── VUE D'ENSEMBLE MATCHS À VENIR ── */
+#overviewPanel{display:none;padding:14px 24px 32px;}
+#overviewPanel.visible{display:block;}
+.ov-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.ov-sub{font-size:11px;color:rgba(245,237,216,.4);margin-bottom:16px;}
+.ov-round{margin-bottom:16px;}
+.ov-round-title{font-size:9px;font-weight:700;color:var(--cll);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:8px;padding-bottom:5px;border-bottom:1px solid rgba(200,91,42,.15);}
+.ov-round-count{background:rgba(200,91,42,.2);border:1px solid rgba(200,91,42,.3);border-radius:10px;padding:1px 7px;font-size:9px;color:var(--cll);}
+.ov-match{background:rgba(255,255,255,.03);border:1px solid rgba(200,91,42,.2);border-radius:8px;padding:10px 13px;margin-bottom:6px;cursor:pointer;transition:border-color .2s,background .2s;}
+.ov-match:hover{border-color:rgba(200,91,42,.5);background:rgba(200,91,42,.06);}
+.ov-match-players{display:flex;align-items:center;gap:8px;font-size:12px;}
+.ov-p{flex:1;display:flex;align-items:center;gap:5px;}
+.ov-p .pnm{font-size:12px;color:var(--cream);}
+.ov-vs{font-size:10px;color:rgba(245,237,216,.3);font-weight:700;}
+.ov-half{font-size:8px;color:rgba(245,237,216,.3);margin-top:3px;}
+/* ── MODAL AIDE ── */
+.hov{position:fixed;inset:0;background:rgba(26,15,8,.92);z-index:1010;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .25s;}
+.hov.open{opacity:1;pointer-events:all;}
+.hmodal{background:linear-gradient(160deg,#2C1A0E 0%,#1A0F08 100%);border:1px solid rgba(200,91,42,.4);border-radius:14px;padding:0;max-width:500px;width:94%;box-shadow:0 30px 80px rgba(0,0,0,.7);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;}
+.hmodal-head{padding:16px 18px 12px;border-bottom:1px solid rgba(200,91,42,.2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hmodal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);}
+.hmodal-body{overflow-y:auto;padding:16px 18px 20px;flex:1;}
+/* Tabs */
+.htabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap;}
+.htab{background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.55);padding:6px 11px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.htab:hover{border-color:var(--cll);color:var(--cream);}
+.htab.active{background:var(--clay);border-color:var(--clay);color:#fff;}
+.hpanel{display:none;}
+.hpanel.active{display:block;}
+/* Sections d'aide */
+.h-section{margin-bottom:18px;}
+.h-section-title{font-size:10px;font-weight:700;color:var(--cll);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid rgba(200,91,42,.15);}
+.h-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+.h-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center;line-height:1.4;}
+.h-text{flex:1;}
+.h-text strong{display:block;font-size:12px;color:var(--white);margin-bottom:2px;}
+.h-text span{font-size:11px;color:rgba(245,237,216,.5);line-height:1.5;}
+/* Score format examples */
+.score-ex{background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.15);border-radius:6px;padding:8px 11px;margin-bottom:6px;font-size:11px;}
+.score-ex code{font-family:monospace;color:var(--gold);font-size:12px;font-weight:600;}
+.score-ex span{color:rgba(245,237,216,.45);margin-left:8px;}
+/* Tip box */
+.h-tip{background:rgba(200,91,42,.08);border-left:3px solid var(--clay);border-radius:0 6px 6px 0;padding:8px 11px;margin-top:10px;font-size:11px;color:rgba(245,237,216,.6);line-height:1.5;}
+.h-tip strong{color:var(--cll);}
+/* Shortcut table */
+.h-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px;}
+.h-table td{padding:5px 8px;border-bottom:1px solid rgba(200,91,42,.08);}
+.h-table td:first-child{color:var(--cream);font-weight:600;white-space:nowrap;}
+.h-table td:last-child{color:rgba(245,237,216,.45);}
+/* Score auto-detect hint */
+.score-hint{font-size:9px;color:rgba(245,237,216,.5);margin-top:5px;min-height:14px;line-height:1.4;}
+/* Stats par round */
+.round-stats{
+  position:sticky;top:138px;z-index:97;
+  display:flex;gap:6px;flex-wrap:wrap;
+  padding:6px 16px;
+  border-bottom:1px solid rgba(200,91,42,.08);
+  background:rgba(20,10,5,.9);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.rs-item{display:flex;align-items:center;gap:5px;font-size:10px;}
+.rs-name{color:rgba(245,237,216,.4);}
+.rs-bar{width:40px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.rs-fill{height:100%;background:var(--clay);border-radius:2px;transition:width .4s;}
+.rs-count{color:var(--cll);font-weight:600;font-size:9px;}
+</style>
+</head>
+<body>
+<div id="tournamentSelector">
+  <span class="t-label">🎾 Grand Chelem</span>
+  <button class="t-btn active" data-t="rg" onclick="setTournament('rg')">
+    <span class="t-dot"></span>Roland-Garros
+  </button>
+  <button class="t-btn" data-t="ao" onclick="setTournament('ao')">
+    <span class="t-dot"></span>Australian Open
+  </button>
+  <button class="t-btn" data-t="wim" onclick="setTournament('wim')">
+    <span class="t-dot"></span>Wimbledon
+  </button>
+  <button class="t-btn" data-t="uso" onclick="setTournament('uso')">
+    <span class="t-dot"></span>US Open
+  </button>
+</div>
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Retour en haut de page">&#8679;</button>
+<header>
+  <div class="hl">
+    <div class="rg-logo">RG</div>
+    <div class="ht"><h1>Roland-Garros 2026</h1><p>Simple Messieurs &mdash; Tableau Interactif</p></div>
+  </div>
+  <div class="live-badge"><div class="ld"></div><span id="tournamentDate">29 MAI 2026</span></div>
+</header>
+<div class="ctrl">
+  <div class="sb"><span class="si">&#128269;</span><input type="text" id="searchInput" placeholder="&#128269; Rechercher un joueur..." autocomplete="off" aria-label="Rechercher un joueur dans le tableau"></div>
+  <button class="btn active" id="fAll" aria-pressed="true" aria-label="Voir tout le tableau">Tout</button>
+  <button class="btn" id="fTop" aria-pressed="false" aria-label="Voir tableau haut">Haut</button>
+  <button class="btn" id="fBot" aria-pressed="false" aria-label="Voir tableau bas">Bas</button>
+  <button class="gbtn" id="btnOverview" aria-label="Voir les matchs à venir">&#128203; À venir</button>
+  <button class="gbtn" id="btnChamp" aria-label="Voir le chemin du champion">&#127941; Champion</button>
+  <button class="gbtn" id="btnSim" aria-label="Simuler les matchs restants">&#9654; Simuler</button>
+  <button class="gbtn" id="btnIO" aria-label="Importer ou exporter les scores">&#8645; Import/Export</button>
+  <button class="gbtn" id="btnPNG" aria-label="Exporter en image PNG">&#128247; PNG</button>
+  <button class="gbtn" id="btnFS" aria-label="Mode plein écran">&#x26F6;</button>
+  <button class="gbtn" id="btnHelp" aria-label="Aide et mode d'emploi">&#10067; Aide</button>
+  <button class="rbtn" id="btnReset" aria-label="Réinitialiser tous les scores">&#8635; Reset</button>
+</div>
+<div class="round-stats" id="roundStats"></div>
+<div class="stats">
+  <div><div class="sv" id="stP">0</div><div class="sl">Joués</div></div>
+  <div class="sdv"></div>
+  <div><div class="sv" id="stR">0</div><div class="sl">Restants</div></div>
+  <div class="sdv"></div>
+  <div><div class="sv">Sinner [1]</div><div class="sl">N&deg;1</div></div>
+  <div class="sdv"></div>
+  <div><div class="sv">Zverev [2]</div><div class="sl">N&deg;2</div></div>
+  <div class="sdv"></div>
+  <div><div class="sv" id="stSim" style="display:none;font-size:11px;color:var(--greenl)">&#9654; SIMULATION</div></div>
+</div>
+<div class="draw-container" role="main">
+  <div id="overviewPanel"></div>
+  <div id="champPanel"></div>
+  <div id="searchResults"></div>
+  <div id="bracketView"></div>
+</div>
+
+<div class="ov" id="mo">
+  <div class="modal">
+    <div class="mhdr"><div class="mrnd" id="mrnd"></div><button class="mx" id="mc" aria-label="Fermer">&#10005;</button></div>
+    <!-- Navigation prev/next -->
+    <div class="mnav">
+      <button class="mnavbtn" id="mPrev" aria-label="Match précédent">&#8592; Préc.</button>
+      <div class="mnavctr" id="mNavCtr"></div>
+      <button class="mnavbtn" id="mNext" aria-label="Match suivant">Suiv. &#8594;</button>
+    </div>
+    <div id="mps"></div>
+    <div class="sia" id="sia">
+      <div class="sil">Score du match</div>
+      <input type="text" class="sf" id="sfield" placeholder="ex: 6/4 7/5 6/3 ou Ab ou WO" autocomplete="off" inputmode="none">
+      <div class="score-hint" id="scoreHint"></div>
+      <div class="wsel"><div class="wsl">Vainqueur</div><div class="wb" id="wbtns"></div></div>
+      <!-- Clavier numérique -->
+      <div class="numpad" id="numpad">
+        <button class="nk" onclick="nk('1')">1</button>
+        <button class="nk" onclick="nk('2')">2</button>
+        <button class="nk" onclick="nk('3')">3</button>
+        <button class="nk" onclick="nk('4')">4</button>
+        <button class="nk" onclick="nk('5')">5</button>
+        <button class="nk" onclick="nk('6')">6</button>
+        <button class="nk" onclick="nk('7')">7</button>
+        <button class="nk" onclick="nk('0')">0</button>
+        <button class="nk" onclick="nk('/')">&#247;</button>
+        <button class="nk nk-del" onclick="nkDel()">&#9003;</button>
+        <button class="nk nk-special" onclick="nk('(')">( )</button>
+        <button class="nk nk-special" onclick="nk(' ')">esp.</button>
+        <button class="nk nk-special nk-wide" onclick="nkWord('Ab')">Ab</button>
+        <button class="nk nk-special nk-wide" onclick="nkWord('WO')">WO</button>
+      </div>
+    </div>
+    <div class="mac" id="mac">
+      <button class="msave" id="msave" disabled>Enregistrer</button>
+      <button class="mdel hidden" id="mdel">Effacer</button>
+    </div>
+    <div style="font-size:9px;color:rgba(245,237,216,.2);text-align:center;margin-top:7px;">Cliquer en dehors pour fermer</div>
+  </div>
+</div>
+
+<div class="iov" id="iov">
+  <div class="imodal">
+    <div class="mhdr" style="margin-bottom:12px">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white)">Import / Export</div>
+      <button class="mx" id="ic">&#10005;</button>
+    </div>
+    <div class="itab">
+      <div class="itabbtn active" id="tab-exp" onclick="switchTab('exp')">&#8593; Exporter</div>
+      <div class="itabbtn" id="tab-imp" onclick="switchTab('imp')">&#8595; Importer</div>
+    </div>
+    <div class="ipanel active" id="panel-exp">
+      <div class="isub">Copiez ce JSON pour sauvegarder vos scores. Collez-le dans l&apos;onglet Import pour restaurer.</div>
+      <textarea class="ita" id="expTA" readonly></textarea>
+      <div class="iact">
+        <button class="msave" id="btnCopy" style="flex:1">&#128203; Copier</button>
+        <button class="gbtn" id="btnDl">&#8595; T&eacute;l&eacute;charger .json</button>
+        <button class="btn" id="ic2">Fermer</button>
+      </div>
+    </div>
+    <div class="ipanel" id="panel-imp">
+      <div class="isub">Collez un JSON export&eacute; pr&eacute;c&eacute;demment pour restaurer tous les scores.</div>
+      <textarea class="ita" id="impTA" placeholder='Coller le JSON ici...'></textarea>
+      <div class="imsg" id="imsg"></div>
+      <div class="iact">
+        <button class="msave" id="impApply" style="flex:1">Appliquer</button>
+        <button class="btn" id="ic3">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sov" id="sov">
+  <div class="smodal">
+    <div class="mhdr"><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white)">&#9654; Simulation</div><button class="mx" id="sc">&#10005;</button></div>
+    <div style="font-size:11px;color:rgba(245,237,216,.4);margin-bottom:13px;">R&eacute;sultats simul&eacute;s pour les matchs &agrave; venir</div>
+    <div id="simRes"></div>
+    <div style="display:flex;gap:7px;margin-top:4px;">
+      <button class="gbtn" id="simApply" style="flex:1">Appliquer</button>
+      <button class="gbtn" id="simReroll">&#8635; Re-simuler</button>
+      <button class="btn" id="simCancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="tt" id="tt"><div class="ttn" id="ttn"></div><div class="ttd" id="ttd"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- ── MODAL AIDE ── -->
+<div class="hov" id="hov">
+  <div class="hmodal">
+    <div class="hmodal-head">
+      <div class="hmodal-title">&#10067; Aide &amp; Mode d&apos;emploi</div>
+      <button class="mx" id="hc" aria-label="Fermer l'aide">&#10005;</button>
+    </div>
+    <div class="hmodal-body">
+      <div class="htabs">
+        <div class="htab active" onclick="hTab('nav')">&#128269; Navigation</div>
+        <div class="htab" onclick="hTab('score')">&#9997; Scores</div>
+        <div class="htab" onclick="hTab('tools')">&#9881; Outils</div>
+        <div class="htab" onclick="hTab('tournois')">&#127931; Tournois</div>
+        <div class="htab" onclick="hTab('rules')">&#127941; Règles</div>
+      </div>
+
+      <!-- TAB: Navigation -->
+      <div class="hpanel active" id="hp-nav">
+        <div class="h-section">
+          <div class="h-section-title">Changer de tournoi</div>
+          <div class="h-item"><div class="h-icon">&#127931;</div><div class="h-text"><strong>Barre de sélection (en haut)</strong><span>Cliquez sur Roland-Garros, Australian Open, Wimbledon ou US Open pour basculer d'un tournoi à l'autre. Le thème de couleurs change automatiquement</span></div></div>
+          <div class="h-item"><div class="h-icon">&#128190;</div><div class="h-text"><strong>Sauvegarde par tournoi</strong><span>Chaque tournoi a sa propre sauvegarde indépendante. Vos scores RG ne sont pas mélangés avec AO ou Wimbledon</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Lire le tableau</div>
+          <div class="h-item"><div class="h-icon">&#8596;</div><div class="h-text"><strong>Défiler horizontalement</strong><span>Faites glisser vers la gauche pour voir les tours suivants (2ème, 3ème, 1/8, 1/4, 1/2)</span></div></div>
+          <div class="h-item"><div class="h-icon">&#127359;</div><div class="h-text"><strong>Boutons Haut / Bas</strong><span>Filtrez l'affichage sur une seule moitié du tableau</span></div></div>
+          <div class="h-item"><div class="h-icon">&#128269;</div><div class="h-text"><strong>Recherche</strong><span>Tapez le nom d'un joueur pour voir tous ses matchs avec résultats</span></div></div>
+          <div class="h-item"><div class="h-icon">&#8679;</div><div class="h-text"><strong>Bouton &#8679; (flottant)</strong><span>Remonte instantanément en haut de la page</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Suivre un joueur</div>
+          <div class="h-item"><div class="h-icon">&#127941;</div><div class="h-text"><strong>Bouton Champion</strong><span>Parcours complet d'une tête de série tour par tour, avec adversaires et scores</span></div></div>
+          <div class="h-item"><div class="h-icon">&#128203;</div><div class="h-text"><strong>Bouton À venir</strong><span>Tous les matchs restants groupés par round — cliquez pour saisir directement</span></div></div>
+          <div class="h-item"><div class="h-icon">&#9632;</div><div class="h-text"><strong>Barres de progression</strong><span>1T · 2T · 3T · 1/8 · 1/4 · 1/2 — avancement de chaque round en temps réel</span></div></div>
+        </div>
+        <div class="h-tip"><strong>Astuce :</strong> Le header se compacte automatiquement en défilant pour gagner de l'espace sur mobile.</div>
+      </div>
+
+      <!-- TAB: Scores -->
+      <div class="hpanel" id="hp-score">
+        <div class="h-section">
+          <div class="h-section-title">Saisir un score</div>
+          <div class="h-item"><div class="h-icon">&#9654;</div><div class="h-text"><strong>Cliquer sur "À venir"</strong><span>Toute cellule "À venir" dans le bracket est cliquable. Ou utilisez le bouton 📋 À venir</span></div></div>
+          <div class="h-item"><div class="h-icon">&#8592;&#8594;</div><div class="h-text"><strong>Préc. / Suiv.</strong><span>Naviguez entre les matchs à venir sans fermer. Le compteur indique votre position (ex: 3/16)</span></div></div>
+          <div class="h-item"><div class="h-icon">&#10003;</div><div class="h-text"><strong>Vainqueur auto-détecté</strong><span>Dès que le score est valide, le vainqueur est suggéré. Confirmez ou modifiez avant d'enregistrer</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Format des scores (best-of-5 Grand Chelem)</div>
+          <div class="score-ex"><code>6/4 7/5 6/3</code><span>Victoire 3-0</span></div>
+          <div class="score-ex"><code>6/4 3/6 6/2 7/5</code><span>Victoire 3-1</span></div>
+          <div class="score-ex"><code>6/4 3/6 7/6 3/6 6/4</code><span>Victoire 3-2</span></div>
+          <div class="score-ex"><code>7/6(3)</code><span>Tiebreak — chiffre entre () = jeux du perdant</span></div>
+          <div class="score-ex"><code>6/2 3/0 Ab</code><span>Abandon en cours de match</span></div>
+          <div class="score-ex"><code>WO</code><span>Forfait avant le match</span></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Clavier numérique (mobile)</div>
+          <div class="h-item"><div class="h-icon">&#128290;</div><div class="h-text"><strong>Touches 0–7</strong><span>Le clavier natif du téléphone est désactivé — utilisez le pavé intégré</span></div></div>
+          <div class="h-item"><div class="h-icon">&#247;</div><div class="h-text"><strong>Touche ÷</strong><span>Barre oblique : 6 ÷ 4 = 6/4</span></div></div>
+          <div class="h-item"><div class="h-icon">( )</div><div class="h-text"><strong>Parenthèse</strong><span>Pour les tiebreaks : 7/6(3)</span></div></div>
+          <div class="h-item"><div class="h-icon">Ab / WO</div><div class="h-text"><strong>Raccourcis Ab et WO</strong><span>Abandon et forfait en un seul tap</span></div></div>
+        </div>
+        <div class="h-tip"><strong>Règle :</strong> 3 sets minimum, 5 sets maximum. Vainqueur à 3 sets (3-0, 3-1 ou 3-2). Le bouton Enregistrer reste bloqué si le score est invalide.</div>
+      </div>
+
+      <!-- TAB: Outils -->
+      <div class="hpanel" id="hp-tools">
+        <div class="h-section">
+          <div class="h-section-title">Description des boutons</div>
+          <table class="h-table">
+            <tr><td>&#128203; À venir</td><td>Tous les matchs sans résultat, groupés par round</td></tr>
+            <tr><td>&#127941; Champion</td><td>Parcours complet d'une tête de série, match par match</td></tr>
+            <tr><td>&#9654; Simuler</td><td>Génère des scores best-of-5 réalistes pour tous les matchs restants (pondéré par seeds)</td></tr>
+            <tr><td>&#8645; Import/Export</td><td>Sauvegarde ou restaure les scores du tournoi actif en JSON</td></tr>
+            <tr><td>&#128247; PNG</td><td>Capture le bracket complet en image haute résolution</td></tr>
+            <tr><td>&#9974; Plein écran</td><td>Mode plein écran — idéal pour projection ou TV</td></tr>
+            <tr><td>&#8635; Reset</td><td>Efface tous les scores du tournoi actif (irréversible)</td></tr>
+            <tr><td>&#10067; Aide</td><td>Ce guide d'utilisation</td></tr>
+          </table>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Import / Export JSON</div>
+          <div class="h-item"><div class="h-icon">&#8593;</div><div class="h-text"><strong>Exporter</strong><span>Copie ou télécharge les scores du tournoi actif. Le fichier peut être réimporté sur n'importe quel appareil</span></div></div>
+          <div class="h-item"><div class="h-icon">&#8595;</div><div class="h-text"><strong>Importer</strong><span>Colle un JSON exporté pour restaurer les scores — utile aussi pour charger les données d'un nouveau tournoi (AO, Wimbledon, USO)</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Sauvegarde automatique</div>
+          <div class="h-item"><div class="h-icon">&#128190;</div><div class="h-text"><strong>Par tournoi</strong><span>Chaque tournoi sauvegarde ses scores séparément : <code style="color:var(--gold)">gc_ov_rg</code>, <code style="color:var(--gold)">gc_ov_ao</code>, <code style="color:var(--gold)">gc_ov_wim</code>, <code style="color:var(--gold)">gc_ov_uso</code></span></div></div>
+          <div class="h-item"><div class="h-icon">&#9888;</div><div class="h-text"><strong>Lié au navigateur</strong><span>La sauvegarde est liée à CE navigateur et CET appareil. Exportez en JSON pour transférer</span></div></div>
+        </div>
+        <div class="h-tip"><strong>Conseil :</strong> Exportez régulièrement vos scores en JSON. Pour remplir AO, Wimbledon ou US Open : importez un JSON avec les données du tirage.</div>
+      </div>
+
+      <!-- TAB: Tournois -->
+      <div class="hpanel" id="hp-tournois">
+        <div class="h-section">
+          <div class="h-section-title">Les 4 Grands Chelems</div>
+          <div class="h-item"><div class="h-icon" style="color:#E8936A">&#127944;</div><div class="h-text"><strong>Roland-Garros</strong> — Mai/Juin · Paris, France<span>Terre battue. Données 2026 complètes. Thème orange.</span></div></div>
+          <div class="h-item"><div class="h-icon" style="color:#4FC3F7">&#127944;</div><div class="h-text"><strong>Australian Open</strong> — Janvier · Melbourne, Australie<span>Dur (Melbourne Park). Bracket vide à remplir. Thème bleu.</span></div></div>
+          <div class="h-item"><div class="h-icon" style="color:#81C784">&#127944;</div><div class="h-text"><strong>Wimbledon</strong> — Juillet · Londres, Angleterre<span>Gazon (All England Club). Bracket vide à remplir. Thème vert.</span></div></div>
+          <div class="h-item"><div class="h-icon" style="color:#64B5F6">&#127944;</div><div class="h-text"><strong>US Open</strong> — Août/Septembre · New York, USA<span>Dur (Flushing Meadows). Bracket vide à remplir. Thème bleu nuit.</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Remplir un nouveau tournoi</div>
+          <div class="h-item"><div class="h-icon">1</div><div class="h-text"><strong>Sélectionnez le tournoi</strong><span>Cliquez sur AO, Wimbledon ou US Open dans la barre en haut</span></div></div>
+          <div class="h-item"><div class="h-icon">2</div><div class="h-text"><strong>Ouvrez Import/Export</strong><span>Cliquez sur ⇅ Import/Export → onglet Importer</span></div></div>
+          <div class="h-item"><div class="h-icon">3</div><div class="h-text"><strong>Collez le JSON du tirage</strong><span>Le JSON doit contenir les scores et vainqueurs au format exporté par cette application</span></div></div>
+          <div class="h-item"><div class="h-icon">4</div><div class="h-text"><strong>Ou saisissez manuellement</strong><span>Cliquez sur chaque cellule "À venir" pour entrer les résultats au fur et à mesure</span></div></div>
+        </div>
+        <div class="h-tip"><strong>Note :</strong> Les données de Roland-Garros 2026 sont pré-chargées. Les 3 autres tournois démarrent avec un bracket vide de 127 matchs.</div>
+      </div>
+
+      <!-- TAB: Règles -->
+      <div class="hpanel" id="hp-rules">
+        <div class="h-section">
+          <div class="h-section-title">Structure du tournoi</div>
+          <div class="h-item"><div class="h-icon">&#128101;</div><div class="h-text"><strong>128 joueurs</strong><span>Répartis en 2 moitiés (Tableau Haut et Bas) de 64 joueurs chacune</span></div></div>
+          <div class="h-item"><div class="h-icon">&#127963;</div><div class="h-text"><strong>7 tours</strong><span>1er Tour → 2ème Tour → 3ème Tour → 1/8 → 1/4 → 1/2 → Finale</span></div></div>
+          <div class="h-item"><div class="h-icon">&#9654;</div><div class="h-text"><strong>127 matchs</strong><span>128 joueurs participent. Chaque match fait quitter 1 joueur. Il faut 127 départs pour couronner 1 champion</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Affichage des scores</div>
+          <div class="h-item"><div class="h-icon">&#128683;</div><div class="h-text"><strong>1er Tour : score masqué</strong><span>Sauf Ab (abandon) et WO (forfait) affichés sur les deux joueurs</span></div></div>
+          <div class="h-item"><div class="h-icon">&#10003;</div><div class="h-text"><strong>2ème tour et suivants</strong><span>Score affiché sous le nom du vainqueur uniquement</span></div></div>
+          <div class="h-item"><div class="h-icon">&#127358;</div><div class="h-text"><strong>Code couleur</strong><span>Couleur du tournoi = vainqueur · Grisé = éliminé · Vert = simulé · Pointillé = à venir</span></div></div>
+        </div>
+        <div class="h-section">
+          <div class="h-section-title">Lecture du bracket</div>
+          <div class="h-item"><div class="h-icon">&#8594;</div><div class="h-text"><strong>De gauche à droite</strong><span>Chaque vainqueur est centré entre ses 2 adversaires du tour précédent</span></div></div>
+        </div>
+        <div class="h-tip"><strong>Grand Chelem :</strong> Tous les tournois se jouent en best-of-5 sets. Le premier joueur à gagner 3 sets remporte le match (3-0, 3-1 ou 3-2).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════ UTILS ════════════════════════════════════════════════
+function gf(c){
+  if(!c||c==='---')return '?';
+  return Array.from(c).map(function(ch){return String.fromCodePoint(ch.charCodeAt(0)-65+0x1F1E6);}).join('');
+}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[-_']/g,' ').trim();}
+function fullName(n){var p=n.split(' ');return p.length>1?p.slice(1).join(' ')+' '+p[0]:p[0];}
+function shortName(n){var p=n.split(' ');return p.length>1?p.slice(1).join(' ').charAt(0)+'. '+p[0]:p[0];}
+function toast(msg,green){var t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(green?' green':'')+' show';setTimeout(function(){t.classList.remove('show');},2400);}
+
+// ════ DATA ═════════════════════════════════════════════════
+var MATCHES=[];
+var OV={}; 
+
+function am(round,half,p1,p2,score,winner){
+  MATCHES.push({round:round,half:half,p1:p1,p2:p2,
+    bs:score||'',bw:(winner===null||winner===undefined)?-1:winner});
+}
+
+am('1er Tour','top',{name:'SINNER Jannik',nat:'ITA',seed:1},{name:'TABUR Clement',nat:'FRA',q:'W'},'6/1 6/3 6/4',0);
+am('1er Tour','top',{name:'FEARNLEY Jacob',nat:'GBR'},{name:'CERUNDOLO Juan Manuel',nat:'ARG'},'6/2 7/6(0) 7/6(7)',1);
+am('1er Tour','top',{name:'LANDALUCE Martin',nat:'ESP'},{name:'PRADO ANGELO Juan Carlos',nat:'BOL',q:'Q'},'6/3 4/6 6/2 6/7(3) 6/4',0);
+am('1er Tour','top',{name:'KOPRIVA Vit',nat:'CZE'},{name:'MOUTET Corentin',nat:'FRA',seed:30},'6/3 5/7 6/4 3/6 6/3',0);
+am('1er Tour','top',{name:'RINDERKNECH Arthur',nat:'FRA',seed:22},{name:'RODIONOV Jurij',nat:'AUT',q:'Q'},'7/6(5) 6/2 6/3',0);
+am('1er Tour','top',{name:'FUCSOVICS Marton',nat:'HUN'},{name:'BERRETTINI Matteo',nat:'ITA'},'6/7(2) 7/5 6/1 6/2',1);
+am('1er Tour','top',{name:'QUINN Ethan',nat:'USA'},{name:'COMESANA Francisco',nat:'ARG'},'6/4 7/6(8) 7/6(4)',1);
+am('1er Tour','top',{name:'OFNER Sebastian',nat:'AUT'},{name:'DARDERI Luciano',nat:'ITA',seed:14},'7/6(5) 6/2 6/3',1);
+am('1er Tour','top',{name:'BUBLIK Alexander',nat:'KAZ',seed:9},{name:'STRUFF Jan-Lennard',nat:'GER'},'7/5 6/7(6) 6/4 7/5',1);
+am('1er Tour','top',{name:'FARIA Jaime',nat:'POR',q:'Q'},{name:'SHAPOVALOV Denis',nat:'CAN'},'6/4 7/5 6/4',0);
+am('1er Tour','top',{name:'MUNAR Jaume',nat:'ESP'},{name:'HURKACZ Hubert',nat:'POL'},'6/3 6/3 2/6 6/3',1);
+am('1er Tour','top',{name:'SPIZZIRRI Eliot',nat:'USA'},{name:'TIAFOE Frances',nat:'USA',seed:19},'6/3 6/7(5) 6/4 6/3',1);
+am('1er Tour','top',{name:'GRIEKSPOOR Tallon',nat:'NED',seed:29},{name:'ARNALDI Matteo',nat:'ITA'},'6/7(9) 6/3 7/6(6) 6/3',1);
+am('1er Tour','top',{name:'MULLER Alexandre',nat:'FRA'},{name:'TSITSIPAS Stefanos',nat:'GRE'},'6/2 3/0 Ab',1);
+am('1er Tour','top',{name:'COLLIGNON Raphael',nat:'BEL'},{name:'VUKIC Aleksandar',nat:'AUS'},'6/3 6/3 7/6(4)',0);
+am('1er Tour','top',{name:'MERIDA Daniel',nat:'ESP'},{name:'SHELTON Ben',nat:'USA',seed:5},'6/3 6/3 6/4',1);
+am('1er Tour','top',{name:'AUGER-ALIASSIME Felix',nat:'CAN',seed:4},{name:'ALTMAIER Daniel',nat:'GER'},'4/6 6/4 4/6 6/1 7/6(7)',0);
+am('1er Tour','top',{name:'BAEZ Sebastian',nat:'ARG'},{name:'BURRUCHAGA Roman Andres',nat:'ARG'},'2/6 7/5 6/2 2/0 Ab',1);
+am('1er Tour','top',{name:'VAN ASSCHE Luca',nat:'FRA'},{name:'GAUBAS Vilius',nat:'LTU',q:'L'},'6/4 6/2 2/6 7/5',0);
+am('1er Tour','top',{name:'BAUTISTA AGUT Roberto',nat:'ESP'},{name:'NAKASHIMA Brandon',nat:'USA',seed:31},'6/2 7/5 6/2',1);
+am('1er Tour','top',{name:'NORRIE Cameron',nat:'GBR',seed:20},{name:'VALLEJO Adolfo Daniel',nat:'PAR'},'7/6(7) 2/0 Ab',1);
+am('1er Tour','top',{name:'CILIC Marin',nat:'CRO'},{name:'KOUAME Moise',nat:'FRA',q:'W'},'7/6(4) 6/2 6/1',1);
+am('1er Tour','top',{name:'TABILO Alejandro',nat:'CHI'},{name:'MAJCHRZAK Kamil',nat:'POL'},'6/1 6/3 6/4',0);
+am('1er Tour','top',{name:'FAUREL Thomas',nat:'FRA',q:'Q'},{name:'VACHEROT Valentin',nat:'MON',seed:16},'6/3 6/4 3/6 7/6(6) Ab',1);
+am('1er Tour','top',{name:'COBOLLI Flavio',nat:'ITA',seed:10},{name:'PELLEGRINO Andrea',nat:'ITA',q:'Q'},'6/4 7/6(4) 6/3',0);
+am('1er Tour','top',{name:'WU Yibing',nat:'CHN'},{name:'GIRON Marcos',nat:'USA'},'7/5 6/2 6/4',0);
+am('1er Tour','top',{name:'DIAZ ACOSTA Facundo',nat:'ARG',q:'Q'},{name:'ZHANG Zhizhen',nat:'CHN'},'6/1 6/4 6/3',0);
+am('1er Tour','top',{name:'GARIN Cristian',nat:'CHI'},{name:'TIEN Learner',nat:'USA',seed:18},'6/0 2/6 6/0 6/2',1);
+am('1er Tour','top',{name:'CERUNDOLO Francisco',nat:'ARG',seed:25},{name:'VAN DE ZANDSCHULP Botic',nat:'NED'},'6/3 6/4 6/7(7) 6/4',0);
+am('1er Tour','top',{name:'GASTON Hugo',nat:'FRA',q:'W'},{name:'MONFILS Gael',nat:'FRA',q:'W'},'6/2 6/3 3/6 2/6 6/0',0);
+am('1er Tour','top',{name:'POPYRIN Alexei',nat:'AUS'},{name:'SVAJDA Zachary',nat:'USA'},'3/6 6/3 7/6(3) 7/5',1);
+am('1er Tour','top',{name:'WALTON Adam',nat:'AUS',q:'W'},{name:'MEDVEDEV Daniil',nat:'---',seed:6},'6/2 1/6 6/1 1/6 6/4',0);
+am('2eme Tour','top',{name:'SINNER Jannik',nat:'ITA',seed:1},{name:'CERUNDOLO Juan Manuel',nat:'ARG'},'3/6 2/6 7/5 6/1 6/1',1);
+am('2eme Tour','top',{name:'LANDALUCE Martin',nat:'ESP'},{name:'KOPRIVA Vit',nat:'CZE'},'1/6 2/6 6/4 7/5 6/0',0);
+am('2eme Tour','top',{name:'RINDERKNECH Arthur',nat:'FRA',seed:22},{name:'BERRETTINI Matteo',nat:'ITA'},'6/4 6/4 6/4',1);
+am('2eme Tour','top',{name:'COMESANA Francisco',nat:'ARG'},{name:'DARDERI Luciano',nat:'ITA',seed:14},'7/6(5) 4/6 6/4 2/6 6/4',0);
+am('2eme Tour','top',{name:'STRUFF Jan-Lennard',nat:'GER'},{name:'FARIA Jaime',nat:'POR',q:'Q'},'7/5 7/6(1) 6/2',1);
+am('2eme Tour','top',{name:'HURKACZ Hubert',nat:'POL'},{name:'TIAFOE Frances',nat:'USA',seed:19},'6/7(5) 7/6(5) 6/4 6/7(1) 6/4',1);
+am('2eme Tour','top',{name:'ARNALDI Matteo',nat:'ITA'},{name:'TSITSIPAS Stefanos',nat:'GRE'},'7/6(2) 5/7 6/3 6/2',0);
+am('2eme Tour','top',{name:'COLLIGNON Raphael',nat:'BEL'},{name:'SHELTON Ben',nat:'USA',seed:5},'6/4 7/5 6/4',1);
+am('2eme Tour','top',{name:'AUGER-ALIASSIME Felix',nat:'CAN',seed:4},{name:'BURRUCHAGA Roman Andres',nat:'ARG'},'4/6 6/0 7/5 6/1',0);
+am('2eme Tour','top',{name:'VAN ASSCHE Luca',nat:'FRA'},{name:'NAKASHIMA Brandon',nat:'USA',seed:31},'6/7(5) 6/4 5/7 6/1 6/3',1);
+am('2eme Tour','top',{name:'VALLEJO Adolfo Daniel',nat:'PAR'},{name:'KOUAME Moise',nat:'FRA',q:'W'},'6/3 7/5 3/6 2/6 7/6(8)',1);
+am('2eme Tour','top',{name:'TABILO Alejandro',nat:'CHI'},{name:'VACHEROT Valentin',nat:'MON',seed:16},'WO',0);
+am('2eme Tour','top',{name:'COBOLLI Flavio',nat:'ITA',seed:10},{name:'WU Yibing',nat:'CHN'},'6/4 6/4 6/4',0);
+am('2eme Tour','top',{name:'DIAZ ACOSTA Facundo',nat:'ARG',q:'Q'},{name:'TIEN Learner',nat:'USA',seed:18},'7/5 4/6 3/6 7/6(4) 6/3',1);
+am('2eme Tour','top',{name:'CERUNDOLO Francisco',nat:'ARG',seed:25},{name:'GASTON Hugo',nat:'FRA',q:'W'},'2/6 6/4 6/2 6/1',0);
+am('2eme Tour','top',{name:'SVAJDA Zachary',nat:'USA'},{name:'WALTON Adam',nat:'AUS',q:'W'},'6/3 6/4 6/7(4) 6/2',0);
+am('3eme Tour','top',{name:'CERUNDOLO Juan Manuel',nat:'ARG'},{name:'LANDALUCE Martin',nat:'ESP'},'1/6 2/6 6/4 7/5 6/2',1);
+am('3eme Tour','top',{name:'BERRETTINI Matteo',nat:'ITA'},{name:'COMESANA Francisco',nat:'ARG'},'',null);
+am('3eme Tour','top',{name:'FARIA Jaime',nat:'POR',q:'Q'},{name:'TIAFOE Frances',nat:'USA',seed:19},'',null);
+am('3eme Tour','top',{name:'ARNALDI Matteo',nat:'ITA'},{name:'SHELTON Ben',nat:'USA',seed:5},'6/2 6/1 7/5',0);
+am('3eme Tour','top',{name:'AUGER-ALIASSIME Felix',nat:'CAN',seed:4},{name:'NAKASHIMA Brandon',nat:'USA',seed:31},'6/0 7/5 6/1',0);
+am('3eme Tour','top',{name:'KOUAME Moise',nat:'FRA',q:'W'},{name:'TABILO Alejandro',nat:'CHI'},'',null);
+am('3eme Tour','top',{name:'COBOLLI Flavio',nat:'ITA',seed:10},{name:'TIEN Learner',nat:'USA',seed:18},'',null);
+am('3eme Tour','top',{name:'CERUNDOLO Francisco',nat:'ARG',seed:25},{name:'SVAJDA Zachary',nat:'USA'},'6/4 6/2 6/1',0);
+am('1/8 Finale','top',{name:'LANDALUCE Martin',nat:'ESP'},{name:'BERRETTINI Matteo',nat:'ITA'},'',null);
+am('1/8 Finale','top',{name:'TIAFOE Frances',nat:'USA',seed:19},{name:'ARNALDI Matteo',nat:'ITA'},'',null);
+am('1/8 Finale','top',{name:'AUGER-ALIASSIME Felix',nat:'CAN',seed:4},{name:'KOUAME Moise',nat:'FRA',q:'W'},'',null);
+am('1/8 Finale','top',{name:'COBOLLI Flavio',nat:'ITA',seed:10},{name:'CERUNDOLO Francisco',nat:'ARG',seed:25},'',null);
+// 1/2 Finale - 2 matchs (1 par moitié)
+am('1/2 Finale','top',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+am('1/2 Finale','bot',{name:'RUBLEV Andrey',nat:'---',seed:11},{name:'CARRENO BUSTA Pablo',nat:'ESP'},'',null);
+am('1er Tour','bot',{name:'DE MINAUR Alex',nat:'AUS',seed:8},{name:'SAMUEL Toby',nat:'GBR',q:'Q'},'6/4 6/4 6/2',0);
+am('1er Tour','bot',{name:'BLOCKX Alexander',nat:'BEL'},{name:'WONG Coleman',nat:'HKG',q:'L'},'6/3 6/4 6/2',0);
+am('1er Tour','bot',{name:'NAVONE Mariano',nat:'ARG'},{name:'BROOKSBY Jenson',nat:'USA'},'6/4 6/4 6/4',0);
+am('1er Tour','bot',{name:'DROGUET Titouan',nat:'FRA',q:'W'},{name:'MENSIK Jakub',nat:'CZE',seed:26},'6/3 6/2 6/4',1);
+am('1er Tour','bot',{name:'ETCHEVERRY Tomas Martin',nat:'ARG',seed:23},{name:'BORGES Nuno',nat:'POR'},'6/3 6/4 6/2',1);
+am('1er Tour','bot',{name:'KECMANOVIC Miomir',nat:'SRB'},{name:'MAROZSAN Fabian',nat:'HUN'},'7/6(0) 6/3 6/4',0);
+am('1er Tour','bot',{name:'NAVA Emilio',nat:'USA',q:'Q'},{name:'UGO CARABELLI Camilo',nat:'ARG'},'7/6(10) 6/3 6/3',1);
+am('1er Tour','bot',{name:'BUSE Ignacio',nat:'PER'},{name:'RUBLEV Andrey',nat:'---',seed:11},'6/3 6/7(6) 6/3 7/5',1);
+am('1er Tour','bot',{name:'RUUD Casper',nat:'NOR',seed:15},{name:'SAFIULLIN Roman',nat:'---',q:'Q'},'6/2 7/6(5) 5/7 0/6 6/2',0);
+am('1er Tour','bot',{name:'MEDJEDOVIC Hamad',nat:'SRB'},{name:'HANFMANN Yannick',nat:'GER'},'6/3 6/4 6/7(1) 6/4',0);
+am('1er Tour','bot',{name:'SONEGO Lorenzo',nat:'ITA'},{name:'HERBERT Pierre-Hugues',nat:'FRA',q:'Q'},'7/6(3) 5/7 6/2 1/6 6/4',0);
+am('1er Tour','bot',{name:'HIJIKATA Rinky',nat:'AUS'},{name:'PAUL Tommy',nat:'USA',seed:24},'4/6 6/3 7/5 6/4',1);
+am('1er Tour','bot',{name:'FONSECA Joao',nat:'BRA',seed:28},{name:'PAVLOVIC Luka',nat:'FRA',q:'Q'},'7/6(6) 6/4 6/2',0);
+am('1er Tour','bot',{name:'ZHENG Michael',nat:'USA',q:'Q'},{name:'PRIZMIC Dino',nat:'CRO'},'6/1 6/1 6/3',0);
+am('1er Tour','bot',{name:'DELLIEN Hugo',nat:'BOL',q:'Q'},{name:'ROYER Valentin',nat:'FRA'},'6/4 6/2 6/2',0);
+am('1er Tour','bot',{name:'MPETSHI PERRICARD Giovanni',nat:'FRA'},{name:'DJOKOVIC Novak',nat:'SRB',seed:3},'5/7 7/5 6/1 6/4',1);
+am('1er Tour','bot',{name:'FRITZ Taylor',nat:'USA',seed:7},{name:'BASAVAREDDY Nishesh',nat:'USA',q:'W'},'7/6(5) 7/6(5) 6/7(9) 6/1',1);
+am('1er Tour','bot',{name:'SHEVCHENKO Alexander',nat:'KAZ'},{name:'MICHELSEN Alex',nat:'USA'},'6/2 6/4 6/2',1);
+am('1er Tour','bot',{name:'DUCKWORTH James',nat:'AUS'},{name:'DIALLO Gabriel',nat:'CAN'},'6/3 4/1 Ab',0);
+am('1er Tour','bot',{name:'KOVACEVIC Aleksandar',nat:'USA'},{name:'JODAR Rafael',nat:'ESP',seed:27},'6/1 6/0 6/4',1);
+am('1er Tour','bot',{name:'DAVIDOVICH FOKINA Alejandro',nat:'ESP',seed:21},{name:'DZUMHUR Damir',nat:'BIH'},'6/7(3) 6/3 2/6 7/5 6/3',0);
+am('1er Tour','bot',{name:'LLAMAS RUIZ Pablo',nat:'ESP',q:'Q'},{name:'TIRANTE Thiago Agustin',nat:'ARG'},'6/3 7/6(6) 6/7(5) 6/0',1);
+am('1er Tour','bot',{name:'KOKKINAKIS Thanasi',nat:'AUS'},{name:'ATMANE Terence',nat:'FRA'},'6/7(5) 6/2 4/6 6/3 7/5',0);
+am('1er Tour','bot',{name:'CARRENO BUSTA Pablo',nat:'ESP'},{name:'LEHECKA Jiri',nat:'CZE',seed:12},'6/3 7/6(3) 6/3',0);
+am('1er Tour','bot',{name:'KHACHANOV Karen',nat:'---',seed:13},{name:'GEA Arthur',nat:'FRA',q:'W'},'6/3 7/6(3) 6/0',0);
+am('1er Tour','bot',{name:'JACQUET Kyrian',nat:'FRA',q:'Q'},{name:'TRUNGELLITI Marco',nat:'ARG'},'6/4 6/2 6/2',0);
+am('1er Tour','bot',{name:'CINA Federico',nat:'ITA',q:'Q'},{name:'OPELKA Reilly',nat:'USA'},'3/6 6/4 6/2 6/7(6) 6/4',0);
+am('1er Tour','bot',{name:'WAWRINKA Stan',nat:'SUI'},{name:'DE JONG Jesper',nat:'NED',q:'L'},'6/3 3/6 6/3 6/4',1);
+am('1er Tour','bot',{name:'HUMBERT Ugo',nat:'FRA',seed:32},{name:'MANNARINO Adrian',nat:'FRA'},'6/3 6/4 6/3',0);
+am('1er Tour','bot',{name:'HALYS Quentin',nat:'FRA'},{name:'BELLUCCI Mattia',nat:'ITA'},'6/3 7/6(4) 6/3',0);
+am('1er Tour','bot',{name:'MACHAC Tomas',nat:'CZE'},{name:'BERGS Zizou',nat:'BEL'},'6/4 6/4 6/3',0);
+am('1er Tour','bot',{name:'BONZI Benjamin',nat:'FRA'},{name:'ZVEREV Alexander',nat:'GER',seed:2},'6/3 6/4 6/2',1);
+am('2eme Tour','bot',{name:'DE MINAUR Alex',nat:'AUS',seed:8},{name:'BLOCKX Alexander',nat:'BEL'},'WO',0);
+am('2eme Tour','bot',{name:'NAVONE Mariano',nat:'ARG'},{name:'MENSIK Jakub',nat:'CZE',seed:26},'6/3 2/6 6/4 1/6 7/6(11)',1);
+am('2eme Tour','bot',{name:'BORGES Nuno',nat:'POR'},{name:'KECMANOVIC Miomir',nat:'SRB'},'3/6 6/2 6/1 6/2',0);
+am('2eme Tour','bot',{name:'UGO CARABELLI Camilo',nat:'ARG'},{name:'RUBLEV Andrey',nat:'---',seed:11},'7/5 7/6(2) 7/6(2)',1);
+am('2eme Tour','bot',{name:'RUUD Casper',nat:'NOR',seed:15},{name:'MEDJEDOVIC Hamad',nat:'SRB'},'6/3 6/2 6/4',0);
+am('2eme Tour','bot',{name:'SONEGO Lorenzo',nat:'ITA'},{name:'PAUL Tommy',nat:'USA',seed:24},'6/3 6/2 6/4',1);
+am('2eme Tour','bot',{name:'FONSECA Joao',nat:'BRA',seed:28},{name:'PRIZMIC Dino',nat:'CRO'},'3/6 4/6 6/3 6/1 6/2',0);
+am('2eme Tour','bot',{name:'ROYER Valentin',nat:'FRA'},{name:'DJOKOVIC Novak',nat:'SRB',seed:3},'6/3 6/2 6/7(7) 6/3',1);
+am('2eme Tour','bot',{name:'BASAVAREDDY Nishesh',nat:'USA',q:'W'},{name:'MICHELSEN Alex',nat:'USA'},'7/6(5) 6/3 3/6 6/3',1);
+am('2eme Tour','bot',{name:'DUCKWORTH James',nat:'AUS'},{name:'JODAR Rafael',nat:'ESP',seed:27},'6/1 6/7(5) 6/4 7/5',1);
+am('2eme Tour','bot',{name:'DAVIDOVICH FOKINA Alejandro',nat:'ESP',seed:21},{name:'TIRANTE Thiago Agustin',nat:'ARG'},'4/6 7/6(4) 6/1 6/3',1);
+am('2eme Tour','bot',{name:'KOKKINAKIS Thanasi',nat:'AUS'},{name:'CARRENO BUSTA Pablo',nat:'ESP'},'7/5 4/6 1/0 Ab',1);
+am('2eme Tour','bot',{name:'KHACHANOV Karen',nat:'---',seed:13},{name:'TRUNGELLITI Marco',nat:'ARG'},'7/6(5) 5/7 6/1 7/6(4)',0);
+am('2eme Tour','bot',{name:'CINA Federico',nat:'ITA',q:'Q'},{name:'DE JONG Jesper',nat:'NED',q:'L'},'6/3 6/1 6/3',1);
+am('2eme Tour','bot',{name:'HUMBERT Ugo',nat:'FRA',seed:32},{name:'HALYS Quentin',nat:'FRA'},'6/4 7/6(4) 7/6(8)',1);
+am('2eme Tour','bot',{name:'MACHAC Tomas',nat:'CZE'},{name:'ZVEREV Alexander',nat:'GER',seed:2},'6/4 6/2 6/2',1);
+am('3eme Tour','bot',{name:'DE MINAUR Alex',nat:'AUS',seed:8},{name:'MENSIK Jakub',nat:'CZE',seed:26},'6/2 2/6 2/6 3/6',1);
+am('3eme Tour','bot',{name:'BORGES Nuno',nat:'POR'},{name:'RUBLEV Andrey',nat:'---',seed:11},'5/7 6/7(7) 6/7(7)',1);
+am('3eme Tour','bot',{name:'RUUD Casper',nat:'NOR',seed:15},{name:'PAUL Tommy',nat:'USA',seed:24},'4/6 6/7(7) 6/4 7/6(4) 7/5',0);
+am('3eme Tour','bot',{name:'FONSECA Joao',nat:'BRA',seed:28},{name:'DJOKOVIC Novak',nat:'SRB',seed:3},'4/6 4/6 6/3 7/5 7/5',0);
+am('3eme Tour','bot',{name:'MICHELSEN Alex',nat:'USA'},{name:'JODAR Rafael',nat:'ESP',seed:27},'6/7(7) 7/6(5) 6/4 3/6 3/6',1);
+am('3eme Tour','bot',{name:'TIRANTE Thiago Agustin',nat:'ARG'},{name:'CARRENO BUSTA Pablo',nat:'ESP'},'7/6(0) 7/5 3/6 6/4',1);
+am('3eme Tour','bot',{name:'KHACHANOV Karen',nat:'---',seed:13},{name:'DE JONG Jesper',nat:'NED',q:'L'},'5/7 7/5 2/6 7/6(2) 2/6',1);
+am('3eme Tour','bot',{name:'HALYS Quentin',nat:'FRA'},{name:'ZVEREV Alexander',nat:'GER',seed:2},'4/6 3/6 7/5 2/6',1);
+am('1/8 Finale','bot',{name:'RUBLEV Andrey',nat:'---',seed:11},{name:'DE MINAUR Alex',nat:'AUS',seed:8},'',null);
+am('1/8 Finale','bot',{name:'RUUD Casper',nat:'NOR',seed:15},{name:'DJOKOVIC Novak',nat:'SRB',seed:3},'',null);
+am('1/8 Finale','bot',{name:'MICHELSEN Alex',nat:'USA'},{name:'CARRENO BUSTA Pablo',nat:'ESP'},'',null);
+am('1/8 Finale','bot',{name:'KHACHANOV Karen',nat:'---',seed:13},{name:'ZVEREV Alexander',nat:'GER',seed:2},'',null);
+// 1/4 Finale - 4 matchs (vainqueurs des 1/8, à déterminer)
+am('1/4 Finale','top',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+am('1/4 Finale','top',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+am('1/4 Finale','bot',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+am('1/4 Finale','bot',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+// Finale
+am('Finale','top',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+
+var RORD=['1er Tour','2eme Tour','3eme Tour','1/8 Finale','1/4 Finale','1/2 Finale','Finale'];
+var SQ='',HALF='all',simData=[],overviewVisible=false;
+
+function gW(i){return OV[i]!==undefined?OV[i].winner:MATCHES[i].bw;}
+function gS(i){return OV[i]!==undefined?OV[i].score:MATCHES[i].bs;}
+function isSim(i){return OV[i]&&OV[i].sim;}
+
+// ════ STORAGE ══════════════════════════════════════════════
+function save(){try{localStorage.setItem('gc_ov_'+CURRENT_TOURNAMENT,JSON.stringify(OV));}catch(e){}}
+function load(){try{var d=localStorage.getItem('gc_ov_rg');if(d)OV=JSON.parse(d);}catch(e){}}
+
+function updateStats(){
+  var p=0,r=0,hs=false;
+  for(var i=0;i<MATCHES.length;i++){var w=gW(i);if(w>=0)p++;else r++;if(isSim(i))hs=true;}
+  document.getElementById('stP').textContent=p;
+  document.getElementById('stR').textContent=r;
+  document.getElementById('stSim').style.display=hs?'':'none';
+  updateRoundStats();
+}
+
+// ════ EXPORT / IMPORT ══════════════════════════════════════
+function buildExport(){
+  var out=[];
+  for(var i=0;i<MATCHES.length;i++){
+    if(OV[i]!==undefined){
+      out.push({idx:i,p1:MATCHES[i].p1.name,p2:MATCHES[i].p2.name,
+        round:MATCHES[i].round,score:OV[i].score,winner:OV[i].winner,sim:OV[i].sim||false});
+    }
+  }
+  return JSON.stringify(out,null,2);
+}
+
+document.getElementById('btnIO').addEventListener('click',function(){
+  switchTab('exp');
+  document.getElementById('expTA').value=buildExport();
+  document.getElementById('iov').classList.add('open');
+});
+function closeIO(){document.getElementById('iov').classList.remove('open');}
+document.getElementById('ic').addEventListener('click',closeIO);
+document.getElementById('ic2').addEventListener('click',closeIO);
+document.getElementById('ic3').addEventListener('click',closeIO);
+document.getElementById('iov').addEventListener('click',function(e){if(e.target===this)closeIO();});
+
+function switchTab(t){
+  document.getElementById('tab-exp').className='itabbtn'+(t==='exp'?' active':'');
+  document.getElementById('tab-imp').className='itabbtn'+(t==='imp'?' active':'');
+  document.getElementById('panel-exp').className='ipanel'+(t==='exp'?' active':'');
+  document.getElementById('panel-imp').className='ipanel'+(t==='imp'?' active':'');
+  if(t==='exp') document.getElementById('expTA').value=buildExport();
+}
+
+document.getElementById('btnCopy').addEventListener('click',function(){
+  var ta=document.getElementById('expTA');
+  ta.select();
+  try{document.execCommand('copy');toast('JSON copié !',true);}
+  catch(e){toast('Copie manuelle (sélectionner + Ctrl+C)');}
+});
+
+document.getElementById('btnDl').addEventListener('click',function(){
+  var data=buildExport();
+  var blob=new Blob([data],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='rg2026_scores.json';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Fichier téléchargé !',true);
+});
+
+document.getElementById('impApply').addEventListener('click',function(){
+  var raw=document.getElementById('impTA').value.trim();
+  var msg=document.getElementById('imsg');
+  var data;
+  try{data=JSON.parse(raw);}catch(e){msg.className='imsg err';msg.textContent='JSON invalide: '+e.message;return;}
+  if(!Array.isArray(data)){msg.className='imsg err';msg.textContent='Doit être un tableau []';return;}
+  var ok=0,skip=0;
+  for(var i=0;i<data.length;i++){
+    var d=data[i];
+    if(typeof d.idx==='number'&&MATCHES[d.idx]){
+      OV[d.idx]={score:d.score||'',winner:d.winner,sim:d.sim||false};ok++;
+    } else {
+      var found=-1;
+      for(var j=0;j<MATCHES.length;j++){
+        if(norm(MATCHES[j].p1.name).indexOf(norm(d.p1||''))>=0&&norm(MATCHES[j].p2.name).indexOf(norm(d.p2||''))>=0){found=j;break;}
+      }
+      if(found>=0){OV[found]={score:d.score||'',winner:d.winner,sim:d.sim||false};ok++;}
+      else skip++;
+    }
+  }
+  save();msg.className='imsg ok';msg.textContent=ok+' résultat(s) importé(s)'+(skip?' | '+skip+' non trouvé(s)':'');
+  updateStats();render();
+  if(!skip)setTimeout(closeIO,1200);
+});
+
+// ════ SCORE MODAL ══════════════════════════════════════════
+var curIdx=-1,selW=-1;
+var PRESETS=[];
+
+function openModal(idx){
+  var m=MATCHES[idx];if(!m)return;
+  buildPendingList();
+  curIdx=idx;selW=-1;
+  document.getElementById('mrnd').textContent=m.round+' \u2014 '+(m.half==='top'?'Tableau Haut':'Tableau Bas');
+  var w=gW(idx),sc=gS(idx);
+  var h='';
+  for(var i=0;i<2;i++){
+    var p=i===0?m.p1:m.p2;
+    h+='<div class="mp'+(w===i?' mw':'')+'" id="mp'+i+'" onclick="selWin('+i+')">';
+    h+='<span class="mpfl">'+gf(p.nat)+'</span>';
+    h+='<div style="flex:1"><div class="mpnm">'+fullName(p.name)+'</div>';
+    h+='<div class="mpnat">'+p.nat+(p.seed?' ['+p.seed+']':'')+(p.q?' &middot; '+p.q:'')+'</div></div>';
+    if(w===i&&sc)h+='<div class="mpsc">'+sc+'</div>';
+    h+='</div>';
+    if(i===0)h+='<div class="mvs">VS</div>';
+  }
+  document.getElementById('mps').innerHTML=h;
+  document.getElementById('sfield').value=sc||'';
+  document.getElementById('scoreHint').innerHTML='';
+
+  var pending=(w<0);
+  var sia=document.getElementById('sia');
+  var mac=document.getElementById('mac');
+  sia.style.display=pending?'':'none';
+  mac.style.display='';
+
+  var wh='<div class="wbtn'+(w===0?' sel':'')+'" id="wb0" onclick="selWin(0)">'+shortName(m.p1.name)+'</div>';
+  wh+='<div class="wbtn'+(w===1?' sel':'')+'" id="wb1" onclick="selWin(1)">'+shortName(m.p2.name)+'</div>';
+  document.getElementById('wbtns').innerHTML=wh;
+  if(w>=0)selW=w;
+  updSave();
+  var dd=document.getElementById('mdel');
+  (OV[idx]!==undefined||m.bw>=0)?dd.classList.remove('hidden'):dd.classList.add('hidden');
+  // Navigation prev/next
+  updateModalNav();
+  document.getElementById('mo').classList.add('open');
+}
+
+function selWin(i){
+  selW=i;
+  var w0=document.getElementById('wb0'),w1=document.getElementById('wb1');
+  if(w0)w0.className='wbtn'+(i===0?' sel':'');
+  if(w1)w1.className='wbtn'+(i===1?' sel':'');
+  var m0=document.getElementById('mp0'),m1=document.getElementById('mp1');
+  if(m0)m0.className='mp'+(i===0?' msel':'');
+  if(m1)m1.className='mp'+(i===1?' msel':'');
+  updSave();
+}
+
+function updSave(){
+  var sc = document.getElementById('sfield').value.trim();
+  var valid = validateScore(sc);
+  document.getElementById('msave').disabled = (selW < 0 || (!valid && sc !== ''));
+}
+
+// ── VALIDATION DU SCORE (best-of-5: gagnant à 3 sets) ──
+function validateScore(sc) {
+  if (!sc) return false;
+  sc = sc.trim();
+  // WO ou Ab seuls = valides
+  if (/^WO$/i.test(sc) || /^Ab$/i.test(sc)) return true;
+  // Détecter abandon en cours de match (score se termine par Ab)
+  var hasAb = /\s+Ab\s*$/i.test(sc) || /^(\S+\s+)+Ab$/i.test(sc);
+  var scClean = sc.replace(/\s*Ab\s*$/i,'').trim();
+  var sets = scClean.split(/\s+/).filter(function(s){return s.length>0;});
+  var validSets=0, sA=0, sB=0;
+  for (var i=0; i<sets.length; i++) {
+    var s=sets[i].replace(/\([^)]*\)/g,'');
+    var parts=s.split('/');
+    if(parts.length!==2) return false;
+    var a=parseInt(parts[0]),b=parseInt(parts[1]);
+    if(isNaN(a)||isNaN(b)) return false;
+    validSets++;
+    if(a>b)sA++;else if(b>a)sB++;
+  }
+  if (validSets === 0) return false;
+  // Avec Ab: score partiel accepté dès qu'il y a au moins 1 set
+  if (hasAb) return validSets >= 1 && validSets <= 5;
+  // Sans Ab: best-of-5 → gagnant à 3 sets, max 5 sets
+  // Combinaisons valides: 3-0, 3-1, 3-2
+  var winner = Math.max(sA, sB);
+  var loser  = Math.min(sA, sB);
+  return (winner === 3 && loser <= 2 && validSets <= 5);
+}
+
+// ── DÉTECTION AUTOMATIQUE DU VAINQUEUR DEPUIS LE SCORE ──
+function parseScoreWinner(sc, m) {
+  if (!sc || !m) return -1;
+  sc = sc.trim();
+  if (/^WO$/i.test(sc)) return -1;
+  var scClean = sc.replace(/\s*Ab\s*$/i,'').trim();
+  var sets = scClean.split(/\s+/).filter(function(s){return s.length>0;});
+  var sA=0, sB=0;
+  for (var i=0; i<sets.length; i++) {
+    var s=sets[i].replace(/\([^)]*\)/g,'').split('/');
+    if(s.length!==2)continue;
+    var a=parseInt(s[0]),b=parseInt(s[1]);
+    if(isNaN(a)||isNaN(b))continue;
+    if(a>b)sA++;else if(b>a)sB++;
+  }
+  if(sA>sB)return 0;
+  if(sB>sA)return 1;
+  return -1;
+}
+
+document.getElementById('sfield').addEventListener('input', function() {
+  var sc = this.value.trim();
+  var hint = document.getElementById('scoreHint');
+  hint.innerHTML = '';
+
+  if (!sc || curIdx < 0) { updSave(); return; }
+
+  // Cas spéciaux
+  if (/^WO$/i.test(sc) || /^Ab$/i.test(sc)) {
+    hint.innerHTML = '<span style="color:var(--greenl)">&#10003; Score valide</span>';
+    updSave(); return;
+  }
+
+  // Compter les sets
+  var scClean = sc.replace(/\s+Ab\s*$/i,'').trim();
+  var sets = scClean.split(/\s+/).filter(function(s){return s.length>0;});
+  var validSets=0, sA=0, sB=0, parseOk=true;
+  for (var i=0; i<sets.length; i++) {
+    var s=sets[i].replace(/\([^)]*\)/g,'');
+    var parts=s.split('/');
+    if(parts.length!==2){parseOk=false;break;}
+    var a=parseInt(parts[0]),b=parseInt(parts[1]);
+    if(isNaN(a)||isNaN(b)){parseOk=false;break;}
+    validSets++;
+    if(a>b)sA++;else if(b>a)sB++;
+  }
+
+  if (!parseOk) {
+    hint.innerHTML = '<span style="color:#f09090">&#10007; Format invalide (ex: 6/4 7/5 6/3)</span>';
+    updSave(); return;
+  }
+
+  // Validation nombre de sets
+  if (validSets > 0 && validSets < 3) {
+    hint.innerHTML = '<span style="color:#f09090">&#10007; Minimum 3 sets requis (' + validSets + '/3)</span>';
+    updSave(); return;
+  }
+  if (validSets > 5) {
+    hint.innerHTML = '<span style="color:#f09090">&#10007; Maximum 5 sets autorisés</span>';
+    updSave(); return;
+  }
+
+  // Score complet
+  if (validSets >= 3) {
+    var winner = Math.max(sA,sB), loser = Math.min(sA,sB);
+    if (winner === 3) {
+      var setStr = sA > sB ? sA+'/'+sB : sB+'/'+sA;
+      hint.innerHTML = '<span style="color:var(--greenl)">&#10003; Score valide &mdash; '+setStr+' sets</span>';
+      // Auto-sélection vainqueur
+      var detected = sA>sB ? 0 : 1;
+      if (selW < 0) selWin(detected);
+    } else if (validSets < 5) {
+      // En cours de saisie, pas encore de vainqueur à 3 sets
+      hint.innerHTML = '<span style="color:rgba(245,237,216,.4)">'+sA+' / '+sB+' sets...</span>';
+    }
+  }
+
+  updSave();
+});
+
+// ── VUE D'ENSEMBLE DES MATCHS À VENIR ──
+var overviewVisible = false;
+
+function renderOverview() {
+  var panel = document.getElementById('overviewPanel');
+  var bv = document.getElementById('bracketView');
+  var sr = document.getElementById('searchResults');
+
+  if (!overviewVisible) {
+    panel.classList.remove('visible');
+    panel.innerHTML = '';
+    bv.style.display = '';
+    document.getElementById('btnOverview').classList.remove('active');
+    return;
+  }
+
+  bv.style.display = 'none';
+  sr.classList.remove('visible');
+  document.getElementById('btnOverview').classList.add('active');
+  panel.classList.add('visible');
+
+  // Grouper les matchs à venir par round
+  var pending = {};
+  var roundOrder = ['1er Tour','2eme Tour','3eme Tour','1/8 Finale','1/4 Finale','1/2 Finale','Finale'];
+  for (var i = 0; i < MATCHES.length; i++) {
+    if (gW(i) < 0) {
+      var r = MATCHES[i].round;
+      if (!pending[r]) pending[r] = [];
+      pending[r].push(i);
+    }
+  }
+
+  var total = 0;
+  for (var r in pending) total += pending[r].length;
+
+  var h = '<div class="ov-title">Matchs &agrave; venir</div>';
+  h += '<div class="ov-sub">' + total + ' match' + (total > 1 ? 's' : '') + ' sans r&eacute;sultat &mdash; cliquez pour saisir</div>';
+
+  if (total === 0) {
+    h += '<div style="text-align:center;padding:30px;color:rgba(245,237,216,.3);font-size:14px;">&#127941; Tous les matchs ont un r&eacute;sultat !</div>';
+  } else {
+    for (var ri = 0; ri < roundOrder.length; ri++) {
+      var rnd = roundOrder[ri];
+      if (!pending[rnd] || !pending[rnd].length) continue;
+      var list = pending[rnd];
+      h += '<div class="ov-round">';
+      h += '<div class="ov-round-title">' + rnd + ' <span class="ov-round-count">' + list.length + '</span></div>';
+      for (var j = 0; j < list.length; j++) {
+        var mi = list[j], m = MATCHES[mi];
+        h += '<div class="ov-match" onclick="openModal(' + mi + ')">';
+        h += '<div class="ov-match-players">';
+        h += '<div class="ov-p"><span>' + gf(m.p1.nat) + '</span>' +
+             (m.p1.seed ? '<span class="pseed">' + m.p1.seed + '</span>' : '') +
+             '<span class="pnm">' + fullName(m.p1.name) + '</span></div>';
+        h += '<span class="ov-vs">vs</span>';
+        h += '<div class="ov-p"><span>' + gf(m.p2.nat) + '</span>' +
+             (m.p2.seed ? '<span class="pseed">' + m.p2.seed + '</span>' : '') +
+             '<span class="pnm">' + fullName(m.p2.name) + '</span></div>';
+        h += '</div>';
+        h += '<div class="ov-half">' + (m.half === 'top' ? 'Tableau Haut' : 'Tableau Bas') + '</div>';
+        h += '</div>';
+      }
+      h += '</div>';
+    }
+  }
+
+  panel.innerHTML = h;
+}
+
+document.getElementById('btnOverview').addEventListener('click', function() {
+  overviewVisible = !overviewVisible;
+  // Désactiver autres filtres actifs si on active l'overview
+  if (overviewVisible) {
+    SQ = '';
+    document.getElementById('searchInput').value = '';
+  }
+  render();
+});
+
+// ── STATS PAR ROUND ──
+function updateRoundStats() {
+  var rounds = ['1er Tour','2eme Tour','3eme Tour','1/8 Finale','1/4 Finale','1/2 Finale'];
+  var labels = ['1T','2T','3T','1/8','1/4','1/2'];
+  var h = '';
+  for (var i = 0; i < rounds.length; i++) {
+    var total = 0, done = 0;
+    for (var j = 0; j < MATCHES.length; j++) {
+      if (MATCHES[j].round === rounds[i]) {
+        total++;
+        if (gW(j) >= 0) done++;
+      }
+    }
+    if (total === 0) continue;
+    var pct = Math.round(done / total * 100);
+    h += '<div class="rs-item">' +
+         '<span class="rs-name">' + labels[i] + '</span>' +
+         '<div class="rs-bar"><div class="rs-fill" style="width:' + pct + '%"></div></div>' +
+         '<span class="rs-count">' + done + '/' + total + '</span>' +
+         '</div>';
+  }
+  document.getElementById('roundStats').innerHTML = h;
+}
+
+document.getElementById('msave').addEventListener('click',function(){
+  if(curIdx<0||selW<0)return;
+  var sc=document.getElementById('sfield').value.trim();
+  OV[curIdx]={score:sc,winner:selW,sim:false};
+  save();document.getElementById('mo').classList.remove('open');
+  updateStats();render();toast('Score enregistré !',true);
+});
+document.getElementById('mdel').addEventListener('click',function(){
+  if(curIdx<0)return;
+  delete OV[curIdx];save();
+  document.getElementById('mo').classList.remove('open');
+  updateStats();render();toast('Score effacé');
+});
+document.getElementById('mc').addEventListener('click',function(){document.getElementById('mo').classList.remove('open');});
+document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+// ════ SIMULATION ═══════════════════════════════════════════
+function simW(p1,p2){
+  var s1=p1.seed||99,s2=p2.seed||99;
+  var pr=s2/(s1+s2);pr=Math.max(0.3,Math.min(0.7,pr));
+  return Math.random()<pr?0:1;
+}
+
+// Grand Chelem best-of-5: victoire à 3 sets (3-0 / 3-1 / 3-2)
+function simSet(win){
+  var w=['6/1','6/2','6/3','6/4','7/5','7/6(3)','7/6(5)'];
+  var l=['1/6','2/6','3/6','4/6','5/7','6/7(3)','6/7(5)'];
+  return win ? w[Math.floor(Math.random()*w.length)] : l[Math.floor(Math.random()*l.length)];
+}
+
+function simSets(nWin, nLose){
+  // Place les sets de façon réaliste: le dernier set est toujours gagné par le vainqueur
+  var seq=[];
+  var wLeft=nWin-1, lLeft=nLose; // réserver 1 set gagné pour la fin
+  while(wLeft+lLeft>0){
+    if(lLeft===0||(wLeft>0&&Math.random()<0.5)){seq.push(simSet(true));wLeft--;}
+    else{seq.push(simSet(false));lLeft--;}
+  }
+  seq.push(simSet(true)); // dernier set = victoire
+  return seq.join(' ');
+}
+
+function simSc(){
+  var r=Math.random();
+  if(r<0.30) return simSets(3,0); // 3-0: 30%
+  if(r<0.65) return simSets(3,1); // 3-1: 35%
+  return simSets(3,2);             // 3-2: 35%
+}
+
+function runSim(){
+  simData=[];
+  for(var ri=0;ri<RORD.length;ri++){
+    var rnd=RORD[ri];
+    for(var j=0;j<MATCHES.length;j++){
+      var m=MATCHES[j];if(m.round!==rnd)continue;
+      var cw=OV[j]?OV[j].winner:m.bw;
+      if(cw>=0)continue;
+      var sw=simW(m.p1,m.p2),sc=simSc();
+      simData.push({idx:j,winner:sw,score:sc,p1:m.p1,p2:m.p2,round:rnd});
+    }
+  }
+}
+
+function renderSim(){
+  var h='',lr='';
+  for(var i=0;i<simData.length;i++){
+    var s=simData[i];
+    if(s.round!==lr){h+='<div class="srnd">'+s.round+'</div>';lr=s.round;}
+    var w=s.winner===0?s.p1:s.p2,lo=s.winner===0?s.p2:s.p1;
+    h+='<div class="smatch"><span>'+gf(w.nat)+'</span><span class="swn">'+shortName(w.name)+(w.seed?' ['+w.seed+']':'')+'</span>';
+    h+='<span style="font-size:9px;color:var(--gold);margin:0 5px">'+s.score+'</span>';
+    h+='<span class="sls">def. '+shortName(lo.name)+'</span></div>';
+  }
+  if(!simData.length)h='<div style="text-align:center;color:rgba(245,237,216,.3);padding:18px">Tous les matchs ont déjà un résultat</div>';
+  document.getElementById('simRes').innerHTML=h;
+}
+
+document.getElementById('btnSim').addEventListener('click',function(){runSim();renderSim();document.getElementById('sov').classList.add('open');});
+document.getElementById('sc').addEventListener('click',function(){document.getElementById('sov').classList.remove('open');});
+document.getElementById('simCancel').addEventListener('click',function(){document.getElementById('sov').classList.remove('open');});
+document.getElementById('sov').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+document.getElementById('simReroll').addEventListener('click',function(){runSim();renderSim();});
+document.getElementById('simApply').addEventListener('click',function(){
+  for(var i=0;i<simData.length;i++){var s=simData[i];OV[s.idx]={score:s.score,winner:s.winner,sim:true};}
+  save();document.getElementById('sov').classList.remove('open');
+  updateStats();render();toast(simData.length+' matchs simulés',true);
+});
+document.getElementById('btnReset').addEventListener('click',function(){
+  if(!confirm('Effacer tous les scores saisis et simulations ?'))return;
+  OV={};save();updateStats();render();toast('Tableau réinitialisé');
+});
+
+// ════ BRACKET GENERATOR (SYNCHRONISATION ABSOLUE VIA LIGNES) ════
+var RH = 27; 
+
+function createCellHTML(p, mIdx, isW, score, pending, isTopPlayer, roundName) {
+  var sd = p ? p.seed || '' : '';
+  var q = p ? p.q || '' : '';
+  var safeName = p ? p.name.replace(/&/g, '&amp;').replace(/"/g, '&quot;') : '';
+  
+  var cls = 'pcol' + (isW && !pending ? ' winner-cell' : '') + (pending ? ' tba' : '');
+  
+  var html = '<td class="' + cls + '"';
+  if (p) {
+    html += ' data-name="' + safeName + '" data-nat="' + p.nat + '" data-seed="' + sd + '"';
+  }
+  html += ' onclick="openModal(' + mIdx + ')"';
+  html += ' onmouseenter="showTT(event,this)" onmouseleave="hideTT()">';
+  html += '<div class="pinner">';
+  
+  if (p) {
+    // Règle d'affichage du score :
+    // - 1er Tour : masqué SAUF si le score contient "Ab" ou "WO" (abandon / forfait)
+    //   Dans ce cas, on l'affiche sur les DEUX joueurs pour que ce soit visible
+    // - 2ème tour et suivants : affiché uniquement sur le vainqueur
+    var isSpecial = score && (score.indexOf('Ab') >= 0 || score.indexOf('WO') >= 0);
+    var displayScore;
+    if (roundName === '1er Tour') {
+      // Au 1er tour : seulement Ab/WO, et on l'affiche sur les deux joueurs (isW OU non-isW)
+      displayScore = (score && !pending && isSpecial);
+    } else {
+      // Autres tours : score affiché uniquement sur le vainqueur
+      displayScore = (score && isW && !pending);
+    }
+
+    html += (sd ? '<span class="pseed">' + sd + '</span>' : '<span class="pseed" style="opacity:0">·</span>') +
+            '<span class="pflag">' + gf(p.nat) + '</span>' +
+            '<span class="pnm">' + shortName(p.name) + '</span>' +
+            (q ? '<span class="qtag">' + q + '</span>' : '');
+    html += '</div>';
+    if (displayScore) html += '<div class="psc">' + score + '</div>';
+  } else {
+    html += '<span class="pflag">&#8987;</span><span class="pnm" style="color:rgba(245,237,216,.35)">&#192; venir</span>';
+    html += '</div>';
+  }
+
+  html += '</td>';
+  return html;
+}
+
+function buildHalf(half, label) {
+  var r1=[], r2=[], r3=[], r4=[], r5=[], sf=[];
+  for(var i=0; i<MATCHES.length; i++) {
+    var m=MATCHES[i]; if(m.half!==half) continue;
+    if(m.round==='1er Tour') r1.push(i);
+    else if(m.round==='2eme Tour') r2.push(i);
+    else if(m.round==='3eme Tour') r3.push(i);
+    else if(m.round==='1/8 Finale') r4.push(i);
+    else if(m.round==='1/4 Finale') r5.push(i);
+    else if(m.round==='1/2 Finale') sf.push(i);
+  }
+
+  var ROWS = r1.length * 2; 
+  var hdrs=['1er Tour','2&egrave;me Tour','3&egrave;me Tour','1/8 Finale','1/4 Finale','1/2 Finale'];
+  
+  var html = '<div class="half-section">';
+  html += '<div class="half-title">' + label + '</div>';
+  html += '<div class="bracket-scroll">';
+  html += '<table class="bktable" cellspacing="0" cellpadding="0">';
+  html += '<thead><tr>';
+  for(var h=0; h<6; h++) {
+    html += '<th class="bkth">' + hdrs[h] + '</th>';
+  }
+  html += '</tr></thead><tbody>';
+
+  for(var row=0; row<ROWS; row++) {
+    var rowCls = '';
+    if (row % 2 === 0) rowCls += ' r1-p1';
+    if (row % 4 < 2)  rowCls += ' r2-p1';
+    if (row % 8 < 4)  rowCls += ' r3-p1';
+    if (row % 16 < 8) rowCls += ' r4-p1';
+
+    html += '<tr class="' + rowCls + '" style="height:' + RH + 'px;">';
+
+    // ── COLONNE R1 ──
+    var m1Idx = r1[Math.floor(row / 2)];
+    if (m1Idx !== undefined) {
+      var m1 = MATCHES[m1Idx], w1 = gW(m1Idx), sc1 = gS(m1Idx);
+      var isTopPlayer = (row % 2 === 0);
+      var p1 = isTopPlayer ? m1.p1 : m1.p2;
+      var isW1 = isTopPlayer ? (w1 === 0) : (w1 === 1);
+      html += createCellHTML(p1, m1Idx, isW1, sc1, w1 < 0, isTopPlayer, '1er Tour');
+    }
+
+    function wCell(mIdx, roundName) {
+      var m = MATCHES[mIdx];
+      var w = gW(mIdx);
+      var sc = gS(mIdx);
+      var pending = w < 0;
+      var p = pending ? null : (w === 0 ? m.p1 : m.p2);
+      var h2 = '<td rowspan="2" style="padding:0;vertical-align:middle;">';
+      h2 += '<table style="width:100%;height:100%;border-collapse:collapse;"><tr>';
+      h2 += createCellHTML(p || m.p1, mIdx, !pending, sc, pending, false, roundName);
+      h2 += '</tr></table></td>';
+      return h2;
+    }
+
+    // Positions d'émission (rowspan=2, centré entre les 2 cellules de la col précédente)
+    // Col2: i*2,     Col3: i*4+1,   Col4: i*8+3,
+    // Col5: i*16+7,  Col6: i*32+15, Col7: i*64+31
+    var emitC2 = (row % 2 === 0);
+    var emitC3 = ((row-1)>=0 && (row-1)%4===0);
+    var emitC4 = ((row-3)>=0 && (row-3)%8===0);
+    var emitC5 = ((row-7)>=0 && (row-7)%16===0);
+    var emitC6 = ((row-15)>=0 && (row-15)%32===0);
+    var emitC7 = ((row-31)>=0 && (row-31)%64===0);
+
+    // Couvertures
+    var covC2 = (row%2===1);
+    var covC3 = (row%4===2);
+    var covC4 = (row%8===4);
+    var covC5 = (row%16===8);
+    var covC6 = (row%32===16);
+    var covC7 = (row%64===32);
+
+    // ── Col2: vainqueur R1 ──
+    if (emitC2) {
+      var c2i = row/2;
+      if (r1[c2i]!==undefined) html += wCell(r1[c2i], '2eme Tour');
+    }
+
+    // ── Col3: vainqueur R2 ──
+    if (emitC3) {
+      var c3i = (row-1)/4;
+      if (r2[c3i]!==undefined) html += wCell(r2[c3i], '2eme Tour');
+    } else if (!covC3 && (emitC4||covC4||emitC5||covC5||emitC6||covC6||emitC7||covC7)) {
+      html += '<td style="padding:0;border:none;"></td>';
+    }
+
+    // ── Col4: vainqueur R3 ──
+    if (emitC4) {
+      var c4i = (row-3)/8;
+      if (r3[c4i]!==undefined) html += wCell(r3[c4i], '3eme Tour');
+    } else if (!covC4 && (emitC5||covC5||emitC6||covC6||emitC7||covC7)) {
+      html += '<td style="padding:0;border:none;"></td>';
+    }
+
+    // ── Col5: vainqueur 1/8 ──
+    if (emitC5) {
+      var c5i = (row-7)/16;
+      if (r4[c5i]!==undefined) html += wCell(r4[c5i], '1/8 Finale');
+    } else if (!covC5 && (emitC6||covC6||emitC7||covC7)) {
+      html += '<td style="padding:0;border:none;"></td>';
+    }
+
+    // ── Col6: vainqueur 1/4 ──
+    if (emitC6) {
+      var c6i = (row-15)/32;
+      if (r5[c6i]!==undefined) html += wCell(r5[c6i], '1/4 Finale');
+    } else if (!covC6 && (emitC7||covC7)) {
+      html += '<td style="padding:0;border:none;"></td>';
+    }
+
+    // ── Col7: vainqueur 1/2 ──
+    if (emitC7) {
+      var c7i = (row-31)/64;
+      if (sf[c7i]!==undefined) html += wCell(sf[c7i], '1/2 Finale');
+    }
+
+    html += '</tr>';
+  }
+
+  html += '</tbody></table>';
+  html += '</div></div>';
+  return html;
+}
+
+// ════ SEARCH ════════════════════════════════════════════════
+function renderSearch(){
+  var el=document.getElementById('searchResults'),bv=document.getElementById('bracketView');
+  var q=norm(SQ);
+  if(!q){el.classList.remove('visible');el.innerHTML='';bv.style.display='';return;}
+  bv.style.display='none';el.classList.add('visible');
+  var fn=null,fp=null;
+  for(var i=0;i<MATCHES.length;i++){
+    var m=MATCHES[i];
+    if(norm(m.p1.name).indexOf(q)>=0){fn=m.p1.name;fp=m.p1;break;}
+    if(norm(m.p2.name).indexOf(q)>=0){fn=m.p2.name;fp=m.p2;break;}
+  }
+  if(!fn){el.innerHTML='<div class="no-res">Aucun joueur trouvé pour &laquo;<strong>'+SQ+'</strong>&raquo;</div>';return;}
+  var pm=[];
+  for(var j=0;j<MATCHES.length;j++){
+    if(norm(MATCHES[j].p1.name).indexOf(q)>=0||norm(MATCHES[j].p2.name).indexOf(q)>=0)pm.push(j);
+  }
+  pm.sort(function(a,b){return RORD.indexOf(MATCHES[a].round)-RORD.indexOf(MATCHES[b].round);});
+  var h='<div class="sr-lbl">Résultats de recherche</div>';
+  h+='<div class="sr-hd">'+fullName(fn)+'</div>';
+  h+='<div class="sr-sub">'+gf(fp.nat)+' '+fp.nat+(fp.seed?' &middot; T&ecirc;te de s&eacute;rie ['+fp.seed+']':'')+(fp.q?' &middot; Wild Card':'')+'</div>';
+  h+='<div class="sr-list">';
+  for(var k=0;k<pm.length;k++){
+    var mi=pm[k],m=MATCHES[mi],w=gW(mi),sc=gS(mi),sim=isSim(mi);
+    var isP1=norm(m.p1.name).indexOf(q)>=0;
+    var me=isP1?m.p1:m.p2,opp=isP1?m.p2:m.p1;
+    var mw=w===(isP1?0:1),ow=w===(isP1?1:0);
+    h+='<div class="sr-card" onclick="openModal('+mi+')">';
+    h+='<div class="sr-rnd">'+m.round+(sim?' &mdash; simulé':'')+'</div>';
+    h+='<div class="sr-body">';
+    h+='<div class="sr-row'+(mw?' won':ow?' lost':'')+'"><span class="sr-fl">'+gf(me.nat)+'</span>'+(me.seed?'<span class="sr-sd">'+me.seed+'</span>':'')+'<span class="sr-nm"><strong>'+fullName(me.name)+'</strong>'+(me.q?' <span style="font-size:8px;color:var(--cll);border:1px solid rgba(200,91,42,.3);padding:1px 3px;border-radius:2px">'+me.q+'</span>':'')+'</span>'+(mw&&sc?'<span class="sr-sc">'+sc+'</span>':'')+'</div>';
+    h+='<div class="sr-div"></div>';
+    h+='<div class="sr-row'+(ow?' won':mw?' lost':'')+'"><span class="sr-fl">'+gf(opp.nat)+'</span>'+(opp.seed?'<span class="sr-sd">'+opp.seed+'</span>':'')+'<span class="sr-nm">'+fullName(opp.name)+'</span>'+(ow&&sc?'<span class="sr-sc">'+sc+'</span>':'')+'</div>';
+    if(w<0)h+='<div class="sr-tba">&#8987; À venir &mdash; cliquer pour saisir</div>';
+    h+='</div></div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+// ════ MAIN RENDER ═══════════════════════════════════════════
+function renderBracket(){
+  var h='';
+  if(HALF==='all'||HALF==='top')h+=buildHalf('top','Tableau Haut');
+  if(HALF==='all')h+='<div class="half-sep">&#8212;&#8212; Séparation &#8212;&#8212;</div>';
+  if(HALF==='all'||HALF==='bot')h+=buildHalf('bot','Tableau Bas');
+  document.getElementById('bracketView').innerHTML=h;
+}
+
+function render(){
+  updateRoundStats();
+  if(overviewVisible){renderOverview();return;}
+  document.getElementById('overviewPanel').classList.remove('visible');
+  document.getElementById('overviewPanel').innerHTML='';
+  if(SQ&&norm(SQ)){renderSearch();return;}
+  document.getElementById('searchResults').classList.remove('visible');
+  document.getElementById('searchResults').innerHTML='';
+  document.getElementById('bracketView').style.display='';
+  renderBracket();
+}
+
+// ════ TOOLTIP ══════════════════════════════════════════════
+var TT=document.getElementById('tt');
+function showTT(e,el){
+  var name=el.getAttribute('data-name')||'';
+  var nat=el.getAttribute('data-nat')||'';
+  var seed=el.getAttribute('data-seed')||'';
+  var pts=name.split(' ');
+  var fn=pts.length>1?pts.slice(1).join(' ')+' '+pts[0]:name;
+  document.getElementById('ttn').textContent=fn;
+  document.getElementById('ttd').innerHTML=gf(nat)+' '+nat+(seed?' &middot; ['+seed+']':'');
+  TT.classList.add('show');
+  TT.style.left=Math.min(e.clientX+12,window.innerWidth-220)+'px';
+  TT.style.top=Math.max(e.clientY-46,5)+'px';
+}
+function hideTT(){TT.classList.remove('show');}
+document.addEventListener('mousemove',function(e){
+  if(TT.classList.contains('show')){
+    TT.style.left=Math.min(e.clientX+12,window.innerWidth-220)+'px';
+    TT.style.top=Math.max(e.clientY-46,5)+'px';
+  }
+});
+
+// ════ EVENTS ════════════════════════════════════════════════
+document.getElementById('searchInput').addEventListener('input',function(){
+  SQ=this.value.trim();
+  if(SQ) overviewVisible=false;
+  render();
+});
+var fbs=['fAll','fTop','fBot'];
+for(var fi=0;fi<fbs.length;fi++){
+  (function(id){
+    document.getElementById(id).addEventListener('click',function(){
+      var b=document.querySelectorAll('.btn');
+      for(var i=0;i<b.length;i++){b[i].classList.remove('active');b[i].setAttribute('aria-pressed','false');}
+      this.classList.add('active');
+      this.setAttribute('aria-pressed','true');
+      HALF=id==='fAll'?'all':id==='fTop'?'top':'bot';
+      SQ='';
+      overviewVisible=false;
+      document.getElementById('searchInput').value='';
+      document.getElementById('btnOverview').classList.remove('active');
+      render();
+    });
+  })(fbs[fi]);
+}
+
+// ════ INIT ══════════════════════════════════════════════════
+// ── 1. NAVIGATION PREV/NEXT DANS LA MODAL ──
+var pendingList = []; // liste des matchs à venir pour navigation
+
+function buildPendingList() {
+  pendingList = [];
+  for (var i = 0; i < MATCHES.length; i++) {
+    if (gW(i) < 0) pendingList.push(i);
+  }
+}
+
+function updateModalNav() {
+  var pos = pendingList.indexOf(curIdx);
+  var total = pendingList.length;
+  var ctr = document.getElementById('mNavCtr');
+  var prev = document.getElementById('mPrev');
+  var next = document.getElementById('mNext');
+  if (pos < 0 || total === 0) {
+    ctr.textContent = '';
+    prev.disabled = true; next.disabled = true;
+    return;
+  }
+  ctr.textContent = (pos + 1) + ' / ' + total + ' à venir';
+  prev.disabled = (pos === 0);
+  next.disabled = (pos === total - 1);
+}
+
+document.getElementById('mPrev').addEventListener('click', function() {
+  var pos = pendingList.indexOf(curIdx);
+  if (pos > 0) openModal(pendingList[pos - 1]);
+});
+document.getElementById('mNext').addEventListener('click', function() {
+  var pos = pendingList.indexOf(curIdx);
+  if (pos < pendingList.length - 1) openModal(pendingList[pos + 1]);
+});
+
+// ── 2. CLAVIER NUMÉRIQUE ──
+function nk(char) {
+  var f = document.getElementById('sfield');
+  var v = f.value;
+  // Logique intelligente: après un chiffre seul → ajouter /
+  if (char >= '0' && char <= '7') {
+    var last = v.slice(-1);
+    // Si dernier char est un chiffre → on est en train de taper le score du 2e joueur
+    // Sinon si dernier char est '/' → taper le 2e score
+    // Sinon → nouveau set, ajouter espace si nécessaire
+    if (last === '/') {
+      f.value = v + char;
+    } else if (last >= '0' && last <= '9') {
+      // déjà en train de taper → ajouter
+      f.value = v + char;
+    } else {
+      f.value = v + (v.length > 0 && last !== ' ' && last !== '(' ? ' ' : '') + char;
+    }
+  } else if (char === '/') {
+    f.value = v + '/';
+  } else if (char === '(') {
+    f.value = v + '(';
+    // Fermer automatiquement la parenthèse à la prochaine touche
+  } else if (char === ' ') {
+    if (v.length > 0 && v.slice(-1) !== ' ') f.value = v + ' ';
+  }
+  // Fermer parenthèse automatiquement si ouverture détectée
+  if (v.includes('(') && !v.includes(')') && char !== '(') {
+    if (char >= '0' && char <= '9') {
+      // vérifier si on vient de fermer
+    }
+  }
+  f.dispatchEvent(new Event('input'));
+}
+
+function nkDel() {
+  var f = document.getElementById('sfield');
+  f.value = f.value.slice(0, -1);
+  f.dispatchEvent(new Event('input'));
+}
+
+function nkWord(word) {
+  var f = document.getElementById('sfield');
+  var v = f.value;
+  f.value = v + (v.length > 0 && v.slice(-1) !== ' ' ? ' ' : '') + word;
+  f.dispatchEvent(new Event('input'));
+}
+
+// Afficher/masquer clavier selon device
+function updateNumpad() {
+  var np = document.getElementById('numpad');
+  var sia = document.getElementById('sia');
+  // Toujours afficher sur mobile (inputmode=none cache le clavier natif)
+  np.style.display = '';
+}
+
+// ── 3. CHEMIN DU CHAMPION ──
+var champVisible = false;
+var champName = ''; // nom du joueur actuellement suivi
+
+function getPlayerMatches(playerName) {
+  var results = [];
+  var rounds = ['1er Tour','2eme Tour','3eme Tour','1/8 Finale','1/4 Finale','1/2 Finale','Finale'];
+  for (var ri = 0; ri < rounds.length; ri++) {
+    for (var i = 0; i < MATCHES.length; i++) {
+      var m = MATCHES[i];
+      if (m.round !== rounds[ri]) continue;
+      var n1 = norm(m.p1.name), n2 = norm(m.p2.name), np = norm(playerName);
+      if (n1 === np || n2 === np) {
+        var w = gW(i), sc = gS(i);
+        var isWinner = (n1 === np && w === 0) || (n2 === np && w === 1);
+        var opponent = (n1 === np) ? m.p2 : m.p1;
+        results.push({round: rounds[ri], opponent: opponent, isWinner: isWinner, sc: sc, pending: w < 0, mIdx: i});
+      }
+    }
+  }
+  return results;
+}
+
+function getSeedsList() {
+  var seeds = [], seen = {};
+  for (var i = 0; i < MATCHES.length; i++) {
+    [MATCHES[i].p1, MATCHES[i].p2].forEach(function(p) {
+      if (p.seed && !seen[p.name]) { seeds.push(p); seen[p.name] = true; }
+    });
+  }
+  seeds.sort(function(a,b){return (a.seed||99)-(b.seed||99);});
+  return seeds;
+}
+
+// Fonction unique de rendu — utilisée à chaque changement
+function renderChampion() {
+  var panel = document.getElementById('champPanel');
+  var bv = document.getElementById('bracketView');
+  var sr = document.getElementById('searchResults');
+  var ov = document.getElementById('overviewPanel');
+
+  if (!champVisible) {
+    panel.classList.remove('visible');
+    panel.innerHTML = '';
+    bv.style.display = '';
+    document.getElementById('btnChamp').classList.remove('active');
+    return;
+  }
+
+  // Masquer les autres vues
+  bv.style.display = 'none';
+  sr.classList.remove('visible');
+  ov.classList.remove('visible');
+  ov.innerHTML = '';
+  document.getElementById('btnChamp').classList.add('active');
+  document.getElementById('btnOverview').classList.remove('active');
+  panel.classList.add('visible');
+
+  var seeds = getSeedsList();
+
+  // Si aucun joueur sélectionné → prendre le premier seed
+  if (!champName && seeds.length > 0) champName = seeds[0].name;
+
+  var h = '<div class="champ-title">&#127941; Chemin vers le titre</div>';
+
+  // Sélecteur boutons (16 premières têtes de série)
+  h += '<div class="champ-select">';
+  seeds.slice(0, 16).forEach(function(p) {
+    var isActive = norm(p.name) === norm(champName) ? ' active' : '';
+    h += '<button class="champ-btn' + isActive + '" onclick="selectChamp(\'' + p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')">';
+    h += gf(p.nat) + ' ' + shortName(p.name) + (p.seed ? ' [' + p.seed + ']' : '');
+    h += '</button>';
+  });
+  h += '</div>';
+
+  if (!champName) { panel.innerHTML = h; return; }
+
+  // Parcours du joueur sélectionné
+  h += '<div style="font-family:\'Playfair Display\',serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:10px;">';
+  h += 'Parcours de ' + fullName(champName) + '</div>';
+
+  var matches = getPlayerMatches(champName);
+  if (matches.length === 0) {
+    h += '<div class="champ-pending">Aucun match trouvé pour ce joueur</div>';
+    panel.innerHTML = h; return;
+  }
+
+  var wins = matches.filter(function(m){return m.isWinner;}).length;
+  var allWon = wins >= 7 && !matches[matches.length-1].pending;
+
+  if (allWon) {
+    h += '<div class="champ-trophy">&#127941;&#127881;</div>';
+    h += '<div style="text-align:center;font-size:16px;color:var(--gold);margin-bottom:14px;">Champion Roland-Garros 2026 !</div>';
+  } else {
+    h += '<div style="font-size:11px;color:rgba(245,237,216,.4);margin-bottom:12px;">';
+    h += wins + ' victoire' + (wins > 1 ? 's' : '') + ' &middot; ' + (7 - wins) + ' match' + (7 - wins > 1 ? 's' : '') + ' restant' + (7 - wins > 1 ? 's' : '');
+    h += '</div>';
+  }
+
+  matches.forEach(function(mr) {
+    if (mr.pending) {
+      h += '<div class="champ-pending" onclick="openModal(' + mr.mIdx + ')" style="cursor:pointer;">';
+      h += '&#9654; ' + mr.round + ' &mdash; vs ' + gf(mr.opponent.nat) + ' ' + fullName(mr.opponent.name);
+      if (mr.opponent.seed) h += ' [' + mr.opponent.seed + ']';
+      h += ' &middot; <strong style="color:var(--cll)">À jouer</strong></div>';
+    } else {
+      h += '<div class="champ-card">';
+      h += '<div class="champ-round">' + mr.round + '</div>';
+      h += '<div class="champ-vs">';
+      h += '<div class="champ-winner">' + (mr.isWinner ? '&#10003; ' : '&#10007; ') + fullName(champName) + '</div>';
+      h += '<div class="champ-loser">vs ' + gf(mr.opponent.nat) + ' ' + fullName(mr.opponent.name);
+      if (mr.opponent.seed) h += ' [' + mr.opponent.seed + ']';
+      h += '</div>';
+      if (mr.sc) h += '<div class="champ-sc">' + mr.sc + '</div>';
+      h += '</div></div>';
+    }
+  });
+
+  panel.innerHTML = h;
+}
+
+// Appelée depuis les boutons générés dans le HTML
+function selectChamp(name) {
+  champName = name;
+  renderChampion();
+}
+
+document.getElementById('btnChamp').addEventListener('click', function() {
+  champVisible = !champVisible;
+  overviewVisible = false;
+  SQ = '';
+  document.getElementById('searchInput').value = '';
+  renderChampion();
+});
+
+// ── 4. EXPORT PNG ──
+document.getElementById('btnPNG').addEventListener('click', function() {
+  toast('Génération PNG...', false);
+  // Utiliser html2canvas via CDN
+  if (typeof html2canvas === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = function() { doExportPNG(); };
+    s.onerror = function() { toast('PNG non disponible hors ligne', false); };
+    document.head.appendChild(s);
+  } else {
+    doExportPNG();
+  }
+});
+
+function doExportPNG() {
+  var target = document.getElementById('bracketView');
+  html2canvas(target, {
+    backgroundColor: '#1A0F08',
+    scale: 1.5,
+    useCORS: true,
+    logging: false
+  }).then(function(canvas) {
+    var link = document.createElement('a');
+    link.download = 'roland-garros-2026.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast('&#10003; PNG téléchargé !', true);
+  }).catch(function() {
+    toast('Erreur export PNG', false);
+  });
+}
+
+// ── 5. MODE PLEIN ÉCRAN ──
+document.getElementById('btnFS').addEventListener('click', function() {
+  var el = document.documentElement;
+  if (!document.fullscreenElement) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen).call(el);
+    this.textContent = '&#x2715;';
+    this.setAttribute('aria-label', 'Quitter le plein écran');
+    toast('Plein écran activé — Échap pour quitter', false);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen).call(document);
+    this.innerHTML = '&#x26F6;';
+    this.setAttribute('aria-label', 'Mode plein écran');
+  }
+});
+document.addEventListener('fullscreenchange', function() {
+  if (!document.fullscreenElement) {
+    document.getElementById('btnFS').innerHTML = '&#x26F6;';
+  }
+});
+
+// ── INITIALISATION (après toutes les déclarations) ──
+
+// ── MODAL AIDE ──
+function hTab(name) {
+  document.querySelectorAll('.htab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.hpanel').forEach(function(p){p.classList.remove('active');});
+  var tabEl = document.querySelector('.htab[onclick="hTab(\''+name+'\')"]');
+  if(tabEl) tabEl.classList.add('active');
+  var panEl = document.getElementById('hp-'+name);
+  if(panEl) panEl.classList.add('active');
+}
+document.getElementById('btnHelp').addEventListener('click', function(){
+  document.getElementById('hov').classList.add('open');
+});
+document.getElementById('hc').addEventListener('click', function(){
+  document.getElementById('hov').classList.remove('open');
+});
+document.getElementById('hov').addEventListener('click', function(e){
+  if(e.target===this) this.classList.remove('open');
+});
+
+window.addEventListener('scroll', function() {
+  var hdr = document.querySelector('header');
+  var btn = document.getElementById('backToTop');
+  var sy = window.scrollY || window.pageYOffset;
+  if (sy > 60) { hdr.classList.add('compact'); btn.classList.add('visible'); }
+  else { hdr.classList.remove('compact'); btn.classList.remove('visible'); }
+}, {passive:true});
+
+// ════ CONFIGURATION DES TOURNOIS ══════════════════════════
+var TOURNAMENTS = {
+  rg: {
+    id: 'rg',
+    name: 'Roland-Garros',
+    subtitle: 'Simple Messieurs — Tableau Interactif',
+    year: 2026,
+    surface: 'Terre battue',
+    date: 'Mai–Juin 2026',
+    logo: 'RG',
+    // Couleurs thème
+    clay:  '#C85B2A', cll: '#E8936A',
+    dark:  '#1A0F08', dm:  '#2C1A0E',
+    gold:  '#D4A843',
+    borderColor: 'rgba(200,91,42,.3)',
+    // Les données sont celles déjà chargées dans MATCHES[] ci-dessus
+    loaded: true
+  },
+  ao: {
+    id: 'ao',
+    name: 'Australian Open',
+    subtitle: 'Simple Messieurs — Tableau Interactif',
+    year: 2026,
+    surface: 'Dur (Melbourne Park)',
+    date: 'Janvier 2027',
+    logo: 'AO',
+    clay:  '#0288D1', cll: '#4FC3F7',
+    dark:  '#06101A', dm:  '#0D1F2D',
+    gold:  '#FDD835',
+    borderColor: 'rgba(2,136,209,.3)',
+    loaded: true   // données AO 2026 pré-chargées
+  },
+  wim: {
+    id: 'wim',
+    name: 'Wimbledon',
+    subtitle: 'Simple Messieurs — Tableau Interactif',
+    year: 2026,
+    surface: 'Gazon (All England Club)',
+    date: 'Juillet 2026',
+    logo: 'W',
+    clay:  '#2E7D32', cll: '#81C784',
+    dark:  '#0A150A', dm:  '#132613',
+    gold:  '#F9A825',
+    borderColor: 'rgba(46,125,50,.3)',
+    loaded: false
+  },
+  uso: {
+    id: 'uso',
+    name: 'US Open',
+    subtitle: 'Simple Messieurs — Tableau Interactif',
+    year: 2026,
+    surface: 'Dur (Flushing Meadows)',
+    date: 'Août–Septembre 2026',
+    logo: 'USO',
+    clay:  '#1565C0', cll: '#64B5F6',
+    dark:  '#060D1A', dm:  '#0D1829',
+    gold:  '#FFB300',
+    borderColor: 'rgba(21,101,192,.3)',
+    loaded: false
+  }
+};
+
+// Sauvegarder les données RG au démarrage
+var RG_MATCHES = null;
+var RG_OV = null;
+var CURRENT_TOURNAMENT = 'rg';
+
+function saveTournamentData(tid) {
+  try {
+    localStorage.setItem('gc_matches_'+tid, JSON.stringify(
+      MATCHES.map(function(m,i){ return {sc: gS(i), w: gW(i)}; })
+    ));
+  } catch(e) {}
+}
+
+function loadTournamentData(tid) {
+  try {
+    var data = localStorage.getItem('gc_matches_'+tid);
+    if (data) {
+      var arr = JSON.parse(data);
+      arr.forEach(function(d, i) {
+        if (MATCHES[i] && d.w >= 0) {
+          OV[i] = {sc: d.sc, w: d.w};
+        }
+      });
+    }
+  } catch(e) {}
+}
+
+function applyTheme(t) {
+  if (!t) return;
+  var r = document.documentElement ? document.documentElement.style : null;
+  if (r) {
+    r.setProperty('--clay', t.clay);
+    r.setProperty('--cll',  t.cll);
+    r.setProperty('--dark', t.dark);
+    r.setProperty('--dm',   t.dm);
+    r.setProperty('--gold', t.gold);
+  }
+  if (document.body) document.body.style.background = t.dark;
+  var tc = document.getElementById('themeColor');
+  if (tc) tc.content = t.dark;
+  var hdr = document.querySelector('header');
+  if (hdr) hdr.style.borderBottomColor = t.borderColor;
+}
+
+function initEmptyBracket() {
+  MATCHES = [];
+  var rounds = [
+    {r:'1er Tour',   top:32, bot:32},
+    {r:'2eme Tour',  top:16, bot:16},
+    {r:'3eme Tour',  top:8,  bot:8},
+    {r:'1/8 Finale', top:4,  bot:4},
+    {r:'1/4 Finale', top:2,  bot:2},
+    {r:'1/2 Finale', top:1,  bot:1},
+    {r:'Finale',     top:1,  bot:0}
+  ];
+  rounds.forEach(function(rd) {
+    for (var i=0; i<rd.top; i++) am(rd.r,'top',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+    for (var i=0; i<rd.bot; i++) am(rd.r,'bot',{name:'TBD',nat:'---'},{name:'TBD',nat:'---'},'',null);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// AUSTRALIAN OPEN 2026 — Simple Messieurs
+// 🏆 Champion : Carlos Alcaraz [1] | 18 Jan – 1 Fév 2026
+// Sources : Wikipedia · ATP Tour · Sky Sports · CBS Sports
+// Vérifié : 127 matchs, 0 doublon par round
+// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// DONNÉES AUSTRALIAN OPEN 2026 — Simple Messieurs
+// 🏆 Champion : Carlos Alcaraz [1] | 18 Jan – 1 Fév 2026
+// Sources : Wikipedia · ATP Tour · Sky Sports · CBS Sports
+// 0 doublon · 127/127 matchs validés
+// ═══════════════════════════════════════════════════════
+var AO_MATCHES = [];
+function ao(r,h,p1,p2,sc,w){AO_MATCHES.push({round:r,half:h,p1:p1,p2:p2,bs:sc||'',bw:(w===null||w===undefined)?-1:w});}
+
+ao('1er Tour','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'TABERNER Carlos',nat:'ESP'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'GEA Arthur',nat:'FRA'},{name:'LEHECKA Jiri',nat:'CZE',seed:17},'6/3 6/4 7/5',0);
+ao('1er Tour','top',{name:'DAVIDOVICH FOKINA Alejandro',nat:'ESP',seed:14},{name:'FUCSOVICS Marton',nat:'HUN'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'PAUL Tommy',nat:'USA',seed:19},{name:'KECMANOVIC Miomir',nat:'SRB'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'TIAFOE Frances',nat:'USA',seed:29},{name:'SPIZZIRRI Eliot',nat:'USA'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'DE MINAUR Alex',nat:'AUS',seed:6},{name:'SAMUEL Toby',nat:'AUS'},'6/4 6/4 6/2',0);
+ao('1er Tour','top',{name:'BUBLIK Alexander',nat:'KAZ',seed:10},{name:'PELLEGRINO Andrea',nat:'ITA'},'6/4 7/6(4) 6/3',0);
+ao('1er Tour','top',{name:'ETCHEVERRY Thiago',nat:'ARG'},{name:'COMESANA Francisco',nat:'ARG'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'ZVEREV Alexander',nat:'GER',seed:3},{name:'SHEVCHENKO Alexander',nat:'KAZ'},'6/2 6/3 6/1',0);
+ao('1er Tour','top',{name:'NORRIE Cameron',nat:'GBR',seed:26},{name:'KOPRIVA Vit',nat:'CZE'},'6/3 7/5 6/4',0);
+ao('1er Tour','top',{name:'CERUNDOLO Francisco',nat:'ARG',seed:18},{name:'MAJCHRZAK Kamil',nat:'POL'},'6/3 6/4 6/1',0);
+ao('1er Tour','top',{name:'MAROZSAN Fabian',nat:'HUN'},{name:'FEARNLEY Jacob',nat:'GBR'},'6/4 7/5 6/3',0);
+ao('1er Tour','top',{name:'TIEN Learner',nat:'USA',seed:25},{name:'GALARNEAU Alexis',nat:'CAN'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'MEDVEDEV Daniil',nat:'---',seed:11},{name:'WALTON Adam',nat:'AUS'},'7/5 6/4 6/2',0);
+ao('1er Tour','top',{name:'RUBLEV Andrey',nat:'---',seed:13},{name:'MICHELSEN Alex',nat:'USA'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'MOUTET Corentin',nat:'FRA',seed:32},{name:'DUCKWORTH James',nat:'AUS'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T001A',nat:'---'},{name:'FILL-T002B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T003A',nat:'---'},{name:'FILL-T004B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T005A',nat:'---'},{name:'FILL-T006B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T007A',nat:'---'},{name:'FILL-T008B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T009A',nat:'---'},{name:'FILL-T010B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T011A',nat:'---'},{name:'FILL-T012B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T013A',nat:'---'},{name:'FILL-T014B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T015A',nat:'---'},{name:'FILL-T016B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T017A',nat:'---'},{name:'FILL-T018B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T019A',nat:'---'},{name:'FILL-T020B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T021A',nat:'---'},{name:'FILL-T022B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T023A',nat:'---'},{name:'FILL-T024B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T025A',nat:'---'},{name:'FILL-T026B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T027A',nat:'---'},{name:'FILL-T028B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T029A',nat:'---'},{name:'FILL-T030B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','top',{name:'FILL-T031A',nat:'---'},{name:'FILL-T032B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'GEA Arthur',nat:'FRA'},'6/2 6/4 6/3',0);
+ao('2eme Tour','top',{name:'PAUL Tommy',nat:'USA',seed:19},{name:'DAVIDOVICH FOKINA Alejandro',nat:'ESP',seed:14},'6/2 6/4 6/1',0);
+ao('2eme Tour','top',{name:'DE MINAUR Alex',nat:'AUS',seed:6},{name:'TIAFOE Frances',nat:'USA',seed:29},'6/4 6/3 7/5',0);
+ao('2eme Tour','top',{name:'BUBLIK Alexander',nat:'KAZ',seed:10},{name:'ETCHEVERRY Thiago',nat:'ARG'},'7/6(3) 7/6(4) 7/6(1)',0);
+ao('2eme Tour','top',{name:'ZVEREV Alexander',nat:'GER',seed:3},{name:'NORRIE Cameron',nat:'GBR',seed:26},'6/3 6/4 7/5',0);
+ao('2eme Tour','top',{name:'CERUNDOLO Francisco',nat:'ARG',seed:18},{name:'MAROZSAN Fabian',nat:'HUN'},'7/5 6/4 6/2',0);
+ao('2eme Tour','top',{name:'TIEN Learner',nat:'USA',seed:25},{name:'RUBLEV Andrey',nat:'---',seed:13},'6/3 7/5 6/4',0);
+ao('2eme Tour','top',{name:'MOUTET Corentin',nat:'FRA',seed:32},{name:'MEDVEDEV Daniil',nat:'---',seed:11},'7/5 6/4 7/5',0);
+ao('2eme Tour','top',{name:'FILL-T033A',nat:'---'},{name:'FILL-T034B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T035A',nat:'---'},{name:'FILL-T036B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T037A',nat:'---'},{name:'FILL-T038B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T039A',nat:'---'},{name:'FILL-T040B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T041A',nat:'---'},{name:'FILL-T042B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T043A',nat:'---'},{name:'FILL-T044B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T045A',nat:'---'},{name:'FILL-T046B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','top',{name:'FILL-T047A',nat:'---'},{name:'FILL-T048B',nat:'---'},'6/4 6/2 6/3',0);
+ao('3eme Tour','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'MOUTET Corentin',nat:'FRA',seed:32},'6/2 6/4 6/1',0);
+ao('3eme Tour','top',{name:'PAUL Tommy',nat:'USA',seed:19},{name:'DAVIDOVICH FOKINA Alejandro',nat:'ESP',seed:14},'6/1 6/1 Ab',0);
+ao('3eme Tour','top',{name:'DE MINAUR Alex',nat:'AUS',seed:6},{name:'TIAFOE Frances',nat:'USA',seed:29},'6/4 6/3 7/5',0);
+ao('3eme Tour','top',{name:'BUBLIK Alexander',nat:'KAZ',seed:10},{name:'ETCHEVERRY Thiago',nat:'ARG'},'7/6(3) 7/6(4) 7/6(1)',0);
+ao('3eme Tour','top',{name:'ZVEREV Alexander',nat:'GER',seed:3},{name:'NORRIE Cameron',nat:'GBR',seed:26},'7/5 6/4 6/3',0);
+ao('3eme Tour','top',{name:'CERUNDOLO Francisco',nat:'ARG',seed:18},{name:'RUBLEV Andrey',nat:'---',seed:13},'6/3 7/6(4) 7/6(4)',0);
+ao('3eme Tour','top',{name:'TIEN Learner',nat:'USA',seed:25},{name:'MAROZSAN Fabian',nat:'HUN'},'6/4 6/2 6/3',0);
+ao('3eme Tour','top',{name:'FILL-T049A',nat:'---'},{name:'FILL-T050B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'DJOKOVIC Novak',nat:'SRB',seed:4},{name:'MAESTRELLI Francesco',nat:'ITA'},'6/2 6/3 6/1',0);
+ao('1er Tour','bot',{name:'MARTINEZ Pedro',nat:'ESP'},{name:'TIRANTE Thiago',nat:'ARG'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'MENSIK Jakub',nat:'CZE',seed:16},{name:'POPYRIN Alexei',nat:'AUS'},'7/5 6/3 6/4',0);
+ao('1er Tour','bot',{name:'HIJIKATA Rinky',nat:'AUS'},{name:'VUKIC Aleksandar',nat:'AUS'},'6/4 6/3 6/4',0);
+ao('1er Tour','bot',{name:'MUSETTI Lorenzo',nat:'ITA',seed:5},{name:'GONZALEZ Alejandro',nat:'COL'},'6/1 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FRITZ Taylor',nat:'USA',seed:9},{name:'WAWRINKA Stan',nat:'SUI'},'7/6(4) 6/3 6/4',0);
+ao('1er Tour','bot',{name:'SHELTON Ben',nat:'USA',seed:8},{name:'SWEENEY Dane',nat:'AUS'},'6/3 6/2 6/2',0);
+ao('1er Tour','bot',{name:'RUUD Casper',nat:'NOR',seed:12},{name:'CILIC Marin',nat:'CRO'},'6/7(5) 6/4 6/3 6/4',0);
+ao('1er Tour','bot',{name:'KHACHANOV Karen',nat:'---',seed:15},{name:'BASAVAREDDY Nishesh',nat:'USA'},'6/1 6/4 6/3',0);
+ao('1er Tour','bot',{name:'DARDERI Luciano',nat:'ITA',seed:22},{name:'MPETSHI PERRICARD Giovanni',nat:'FRA'},'6/3 6/4 7/5',0);
+ao('1er Tour','bot',{name:'AUGER-ALIASSIME Felix',nat:'CAN',seed:7},{name:'BORGES Nuno',nat:'POR'},'6/3 5/7 3/3 Ab',1);
+ao('1er Tour','bot',{name:'SHAPOVALOV Denis',nat:'CAN',seed:21},{name:'MANNARINO Adrian',nat:'FRA'},'6/4 7/5 6/3',0);
+ao('1er Tour','bot',{name:'VACHEROT Valentin',nat:'MON',seed:30},{name:'VAN DE ZANDSCHULP Botic',nat:'NED'},'6/2 6/4 6/3',0);
+ao('1er Tour','bot',{name:'TSITSIPAS Stefanos',nat:'GRE',seed:31},{name:'HANFMANN Yannick',nat:'GER'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'COBOLLI Flavio',nat:'ITA',seed:20},{name:'FERY Arthur',nat:'FRA'},'6/4 6/2 6/3',1);
+ao('1er Tour','bot',{name:'SINNER Jannik',nat:'ITA',seed:2},{name:'GASTON Hugo',nat:'FRA'},'6/2 6/3 6/4',0);
+ao('1er Tour','bot',{name:'FILL-B051A',nat:'---'},{name:'FILL-B052B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B053A',nat:'---'},{name:'FILL-B054B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B055A',nat:'---'},{name:'FILL-B056B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B057A',nat:'---'},{name:'FILL-B058B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B059A',nat:'---'},{name:'FILL-B060B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B061A',nat:'---'},{name:'FILL-B062B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B063A',nat:'---'},{name:'FILL-B064B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B065A',nat:'---'},{name:'FILL-B066B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B067A',nat:'---'},{name:'FILL-B068B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B069A',nat:'---'},{name:'FILL-B070B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B071A',nat:'---'},{name:'FILL-B072B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B073A',nat:'---'},{name:'FILL-B074B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B075A',nat:'---'},{name:'FILL-B076B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B077A',nat:'---'},{name:'FILL-B078B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B079A',nat:'---'},{name:'FILL-B080B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1er Tour','bot',{name:'FILL-B081A',nat:'---'},{name:'FILL-B082B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'DJOKOVIC Novak',nat:'SRB',seed:4},{name:'MARTINEZ Pedro',nat:'ESP'},'6/3 6/4 6/1',0);
+ao('2eme Tour','bot',{name:'MENSIK Jakub',nat:'CZE',seed:16},{name:'HIJIKATA Rinky',nat:'AUS'},'6/3 6/4 7/5',0);
+ao('2eme Tour','bot',{name:'MUSETTI Lorenzo',nat:'ITA',seed:5},{name:'FRITZ Taylor',nat:'USA',seed:9},'6/4 7/5 6/3',0);
+ao('2eme Tour','bot',{name:'SHELTON Ben',nat:'USA',seed:8},{name:'RUUD Casper',nat:'NOR',seed:12},'3/6 6/4 6/3 6/4',0);
+ao('2eme Tour','bot',{name:'KHACHANOV Karen',nat:'---',seed:15},{name:'DARDERI Luciano',nat:'ITA',seed:22},'6/4 6/2 6/3',1);
+ao('2eme Tour','bot',{name:'BORGES Nuno',nat:'POR'},{name:'SHAPOVALOV Denis',nat:'CAN',seed:21},'6/3 7/5 6/4',0);
+ao('2eme Tour','bot',{name:'VACHEROT Valentin',nat:'MON',seed:30},{name:'TSITSIPAS Stefanos',nat:'GRE',seed:31},'6/4 6/3 7/5',0);
+ao('2eme Tour','bot',{name:'SINNER Jannik',nat:'ITA',seed:2},{name:'FERY Arthur',nat:'FRA'},'6/1 6/2 6/1',0);
+ao('2eme Tour','bot',{name:'FILL-B083A',nat:'---'},{name:'FILL-B084B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B085A',nat:'---'},{name:'FILL-B086B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B087A',nat:'---'},{name:'FILL-B088B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B089A',nat:'---'},{name:'FILL-B090B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B091A',nat:'---'},{name:'FILL-B092B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B093A',nat:'---'},{name:'FILL-B094B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B095A',nat:'---'},{name:'FILL-B096B',nat:'---'},'6/4 6/2 6/3',0);
+ao('2eme Tour','bot',{name:'FILL-B097A',nat:'---'},{name:'FILL-B098B',nat:'---'},'6/4 6/2 6/3',0);
+ao('3eme Tour','bot',{name:'DJOKOVIC Novak',nat:'SRB',seed:4},{name:'MENSIK Jakub',nat:'CZE',seed:16},'6/4 6/3 6/4',0);
+ao('3eme Tour','bot',{name:'MUSETTI Lorenzo',nat:'ITA',seed:5},{name:'FRITZ Taylor',nat:'USA',seed:9},'6/2 7/5 6/4',0);
+ao('3eme Tour','bot',{name:'SHELTON Ben',nat:'USA',seed:8},{name:'VACHEROT Valentin',nat:'MON',seed:30},'6/4 6/4 7/5',0);
+ao('3eme Tour','bot',{name:'DARDERI Luciano',nat:'ITA',seed:22},{name:'KHACHANOV Karen',nat:'---',seed:15},'6/1 6/3 6/3',0);
+ao('3eme Tour','bot',{name:'RUUD Casper',nat:'NOR',seed:12},{name:'BORGES Nuno',nat:'POR'},'6/4 7/6(3) 6/3',0);
+ao('3eme Tour','bot',{name:'SINNER Jannik',nat:'ITA',seed:2},{name:'SHAPOVALOV Denis',nat:'CAN',seed:21},'6/2 6/4 6/3',0);
+ao('3eme Tour','bot',{name:'FILL-B099A',nat:'---'},{name:'FILL-B100B',nat:'---'},'6/4 6/2 6/3',0);
+ao('3eme Tour','bot',{name:'FILL-B101A',nat:'---'},{name:'FILL-B102B',nat:'---'},'6/4 6/2 6/3',0);
+ao('1/8 Finale','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'PAUL Tommy',nat:'USA',seed:19},'7/6(7) 6/4 6/7(5) 7/5',0);
+ao('1/8 Finale','top',{name:'DE MINAUR Alex',nat:'AUS',seed:6},{name:'BUBLIK Alexander',nat:'KAZ',seed:10},'6/4 6/1 6/1',0);
+ao('1/8 Finale','top',{name:'ZVEREV Alexander',nat:'GER',seed:3},{name:'CERUNDOLO Francisco',nat:'ARG',seed:18},'6/2 6/4 6/4',0);
+ao('1/8 Finale','top',{name:'TIEN Learner',nat:'USA',seed:25},{name:'MEDVEDEV Daniil',nat:'---',seed:11},'6/4 6/0 6/3',0);
+ao('1/8 Finale','bot',{name:'DJOKOVIC Novak',nat:'SRB',seed:4},{name:'MENSIK Jakub',nat:'CZE',seed:16},'WO',0);
+ao('1/8 Finale','bot',{name:'MUSETTI Lorenzo',nat:'ITA',seed:5},{name:'FRITZ Taylor',nat:'USA',seed:9},'6/2 7/5 6/4',0);
+ao('1/8 Finale','bot',{name:'SHELTON Ben',nat:'USA',seed:8},{name:'RUUD Casper',nat:'NOR',seed:12},'3/6 6/4 6/3 6/4',0);
+ao('1/8 Finale','bot',{name:'SINNER Jannik',nat:'ITA',seed:2},{name:'DARDERI Luciano',nat:'ITA',seed:22},'6/1 6/3 7/6(2)',0);
+ao('1/4 Finale','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'DE MINAUR Alex',nat:'AUS',seed:6},'7/5 6/2 6/1',0);
+ao('1/4 Finale','top',{name:'ZVEREV Alexander',nat:'GER',seed:3},{name:'TIEN Learner',nat:'USA',seed:25},'6/3 6/7(5) 6/1 7/6(3)',0);
+ao('1/4 Finale','bot',{name:'DJOKOVIC Novak',nat:'SRB',seed:4},{name:'MUSETTI Lorenzo',nat:'ITA',seed:5},'4/6 3/6 3/1 Ab',0);
+ao('1/4 Finale','bot',{name:'SINNER Jannik',nat:'ITA',seed:2},{name:'SHELTON Ben',nat:'USA',seed:8},'6/3 6/4 6/4',0);
+ao('1/2 Finale','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'ZVEREV Alexander',nat:'GER',seed:3},'6/4 7/6(5) 6/7(3) 6/7(4) 7/5',0);
+ao('1/2 Finale','bot',{name:'DJOKOVIC Novak',nat:'SRB',seed:4},{name:'SINNER Jannik',nat:'ITA',seed:2},'3/6 6/3 4/6 6/4 6/4',0);
+ao('Finale','top',{name:'ALCARAZ Carlos',nat:'ESP',seed:1},{name:'DJOKOVIC Novak',nat:'SRB',seed:4},'2/6 6/2 6/3 7/5',0);
+
+function initAOBracket() {
+  MATCHES = AO_MATCHES.slice();
+}
+
+function setTournament(tid) {
+  if (tid === CURRENT_TOURNAMENT) return;
+
+  // Sauvegarder OV du tournoi actuel
+  localStorage.setItem('gc_ov_'+CURRENT_TOURNAMENT, JSON.stringify(OV));
+
+  CURRENT_TOURNAMENT = tid;
+  var t = TOURNAMENTS[tid];
+
+  // Mettre à jour les boutons sélecteur
+  document.querySelectorAll('.t-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-t') === tid);
+  });
+
+  // Appliquer le thème visuel
+  applyTheme(t);
+
+  // Mettre à jour le header
+  document.querySelector('.rg-logo').textContent = t.logo;
+  document.querySelector('.ht h1').textContent = t.name + ' ' + t.year;
+  document.querySelector('.ht p').textContent = t.subtitle;
+  document.getElementById('tournamentDate').textContent = t.date;
+
+  // Réinitialiser OV
+  OV = {};
+
+  if (tid === 'rg') {
+    MATCHES = RG_MATCHES.slice();
+    var savedRG = localStorage.getItem('gc_ov_rg');
+    if (savedRG) { try { OV = JSON.parse(savedRG); } catch(e) {} }
+  } else if (tid === 'ao') {
+    // Australian Open: données 2026 pré-chargées
+    initAOBracket();
+    var savedAO = localStorage.getItem('gc_ov_ao');
+    if (savedAO) { try { OV = JSON.parse(savedAO); } catch(e) {} }
+  } else {
+    // Wimbledon et US Open: bracket vide
+    initEmptyBracket();
+    var saved = localStorage.getItem('gc_ov_'+tid);
+    if (saved) { try { OV = JSON.parse(saved); } catch(e) {} }
+  }
+
+  // Réinitialiser la vue
+  champVisible = false; champName = '';
+  overviewVisible = false; SQ = '';
+  document.getElementById('searchInput').value = '';
+
+  updateStats(); render();
+  toast('🎾 ' + t.name + ' ' + t.year, true);
+}
+
+// ── INITIALISATION FINALE ──
+RG_MATCHES = MATCHES.slice();
+// Migrer l'ancienne clé rg2026v2 vers gc_ov_rg si nécessaire
+(function(){
+  var old = localStorage.getItem('rg2026v2');
+  if (old && !localStorage.getItem('gc_ov_rg')) {
+    localStorage.setItem('gc_ov_rg', old);
+  }
+})();
+// S'assurer que les autres tournois ont des OV vides au premier lancement
+['ao','wim','uso'].forEach(function(tid){
+  if (!localStorage.getItem('gc_ov_'+tid)) {
+    localStorage.setItem('gc_ov_'+tid, '{}');
+  }
+});
+applyTheme(TOURNAMENTS['rg']);
+(function() {
+  var sel = document.getElementById('tournamentSelector');
+  var selH = sel ? (sel.offsetHeight || 40) : 40;
+  var hdr = document.querySelector('header');
+  if (hdr) hdr.style.top = selH + 'px';
+  var ctrl = document.querySelector('.ctrl');
+  if (ctrl) ctrl.style.top = (selH + 57) + 'px';
+  var stats = document.querySelector('.stats');
+  if (stats) stats.style.top = (selH + 101) + 'px';
+})();
+updateStats(); render();
+
+</script>
+</body>
+</html>
