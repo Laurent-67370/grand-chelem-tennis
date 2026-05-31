@@ -2285,6 +2285,37 @@ function initAOBracket() {
   MATCHES = AO_MATCHES.slice();
 }
 
+// ═══════════════════════════════════════════════════════
+// AUSTRALIAN OPEN 2026 — Simple Dames
+// 🏆 Championne : Elena Rybakina [5] | Jan–Fév 2026
+// QF · SF · Finale pré-chargés · Tours 1–4 à saisir
+// ═══════════════════════════════════════════════════════
+var AO_F_MATCHES = [];
+(function(){
+  var T={name:'TBD',nat:'---'};
+  function af(r,h,p1,p2,sc,w){AO_F_MATCHES.push({round:r,half:h,p1:p1,p2:p2,bs:sc||'',bw:(w===null||w===undefined)?-1:w});}
+  var i;
+  for(i=0;i<32;i++) af('1er Tour','top',T,T,'',null);
+  for(i=0;i<32;i++) af('1er Tour','bot',T,T,'',null);
+  for(i=0;i<16;i++) af('2eme Tour','top',T,T,'',null);
+  for(i=0;i<16;i++) af('2eme Tour','bot',T,T,'',null);
+  for(i=0;i<8;i++)  af('3eme Tour','top',T,T,'',null);
+  for(i=0;i<8;i++)  af('3eme Tour','bot',T,T,'',null);
+  for(i=0;i<4;i++)  af('1/8 Finale','top',T,T,'',null);
+  for(i=0;i<4;i++)  af('1/8 Finale','bot',T,T,'',null);
+  af('1/4 Finale','top',{name:'SABALENKA Aryna',nat:'BLR',seed:1},{name:'JOVIC Dunja',nat:'SRB',seed:29},'6/3 6/0',0);
+  af('1/4 Finale','top',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'GAUFF Cori',nat:'USA',seed:3},'6/1 6/2',0);
+  af('1/4 Finale','bot',{name:'PEGULA Jessica',nat:'USA',seed:6},{name:'ANISIMOVA Amanda',nat:'USA',seed:4},'6/2 7/6(1)',0);
+  af('1/4 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'SWIATEK Iga',nat:'POL',seed:2},'7/5 6/1',0);
+  af('1/2 Finale','top',{name:'SABALENKA Aryna',nat:'BLR',seed:1},{name:'SVITOLINA Elina',nat:'UKR',seed:12},'',null);
+  af('1/2 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'PEGULA Jessica',nat:'USA',seed:6},'',null);
+  af('Finale','top',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'SABALENKA Aryna',nat:'BLR',seed:1},'6/4 4/6 6/4',0);
+})();
+
+function initAOFBracket() {
+  MATCHES = AO_F_MATCHES.slice();
+}
+
 function setTournament(tid) {
   if (tid === CURRENT_TOURNAMENT) return;
 
@@ -2313,7 +2344,7 @@ function setTournament(tid) {
   OV = {};
 
   if (CURRENT_GENDER === 'f') {
-    initEmptyBracket();
+    if (tid === 'ao') { initAOFBracket(); } else { initEmptyBracket(); }
     var savedF = localStorage.getItem('gc_ov_'+tid+'_f');
     if (savedF) { try { OV = JSON.parse(savedF); } catch(e) {} }
   } else if (tid === 'rg') {
@@ -2347,7 +2378,7 @@ function setGender(g) {
   OV = {};
   // Charger le bracket approprié
   if (g === 'f') {
-    initEmptyBracket();
+    if (CURRENT_TOURNAMENT === 'ao') { initAOFBracket(); } else { initEmptyBracket(); }
     var savedF = localStorage.getItem('gc_ov_'+CURRENT_TOURNAMENT+'_f');
     if (savedF) { try { OV = JSON.parse(savedF); } catch(e) {} }
   } else {
