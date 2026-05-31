@@ -520,6 +520,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
 .rs-bar{width:40px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
 .rs-fill{height:100%;background:var(--clay);border-radius:2px;transition:width .4s;}
 .rs-count{color:var(--cll);font-weight:600;font-size:9px;}
+.g-sep{width:1px;height:20px;background:rgba(255,255,255,.15);margin:0 6px;align-self:center;flex-shrink:0;}
+.g-btn{background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.55);padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.g-btn:hover{border-color:var(--cll);color:var(--cream);}
+.g-btn.active{background:var(--clay);border-color:var(--clay);color:#fff;}
 </style>
 </head>
 <body>
@@ -537,12 +541,15 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
   <button class="t-btn" data-t="uso" onclick="setTournament('uso')">
     <span class="t-dot"></span>US Open
   </button>
+  <div class="g-sep"></div>
+  <button class="g-btn active" id="gM" onclick="setGender('m')" aria-label="Simple Messieurs">&#9794; Messieurs</button>
+  <button class="g-btn" id="gF" onclick="setGender('f')" aria-label="Simple Dames">&#9792; Dames</button>
 </div>
 <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Retour en haut de page">&#8679;</button>
 <header>
   <div class="hl">
     <div class="rg-logo">RG</div>
-    <div class="ht"><h1>Roland-Garros 2026</h1><p>Simple Messieurs &mdash; Tableau Interactif</p></div>
+    <div class="ht"><h1>Roland-Garros 2026</h1><p id="tournamentSubtitle">Simple Messieurs &mdash; Tableau Interactif</p></div>
   </div>
   <div class="live-badge"><div class="ld"></div><span id="tournamentDate">29 MAI 2026</span></div>
 </header>
@@ -715,7 +722,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
           <div class="h-item"><div class="h-icon">&#10003;</div><div class="h-text"><strong>Vainqueur auto-détecté</strong><span>Dès que le score est valide, le vainqueur est suggéré. Confirmez ou modifiez avant d'enregistrer</span></div></div>
         </div>
         <div class="h-section">
-          <div class="h-section-title">Format des scores (best-of-5 Grand Chelem)</div>
+          <div class="h-section-title">Format des scores</div>
           <div class="score-ex"><code>6/4 7/5 6/3</code><span>Victoire 3-0</span></div>
           <div class="score-ex"><code>6/4 3/6 6/2 7/5</code><span>Victoire 3-1</span></div>
           <div class="score-ex"><code>6/4 3/6 7/6 3/6 6/4</code><span>Victoire 3-2</span></div>
@@ -730,7 +737,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
           <div class="h-item"><div class="h-icon">( )</div><div class="h-text"><strong>Parenthèse</strong><span>Pour les tiebreaks : 7/6(3)</span></div></div>
           <div class="h-item"><div class="h-icon">Ab / WO</div><div class="h-text"><strong>Raccourcis Ab et WO</strong><span>Abandon et forfait en un seul tap</span></div></div>
         </div>
-        <div class="h-tip"><strong>Règle :</strong> 3 sets minimum, 5 sets maximum. Vainqueur à 3 sets (3-0, 3-1 ou 3-2). Le bouton Enregistrer reste bloqué si le score est invalide.</div>
+        <div class="h-tip"><strong>Messieurs (best-of-5) :</strong> Vainqueur à 3 sets (3-0, 3-1 ou 3-2), 5 sets max.<br><strong>Dames (best-of-3) :</strong> Vainqueur à 2 sets (2-0 ou 2-1), 3 sets max.</div>
       </div>
 
       <!-- TAB: Outils -->
@@ -740,7 +747,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
           <table class="h-table">
             <tr><td>&#128203; À venir</td><td>Tous les matchs sans résultat, groupés par round</td></tr>
             <tr><td>&#127941; Champion</td><td>Parcours complet d'une tête de série, match par match</td></tr>
-            <tr><td>&#9654; Simuler</td><td>Génère des scores best-of-5 réalistes pour tous les matchs restants (pondéré par seeds)</td></tr>
+            <tr><td>&#9654; Simuler</td><td>Génère des scores réalistes (best-of-5 hommes, best-of-3 dames) pour tous les matchs restants</td></tr>
             <tr><td>&#8645; Import/Export</td><td>Sauvegarde ou restaure les scores du tournoi actif en JSON</td></tr>
             <tr><td>&#128247; PNG</td><td>Capture le bracket complet en image haute résolution</td></tr>
             <tr><td>&#9974; Plein écran</td><td>Mode plein écran — idéal pour projection ou TV</td></tr>
@@ -798,7 +805,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
           <div class="h-section-title">Lecture du bracket</div>
           <div class="h-item"><div class="h-icon">&#8594;</div><div class="h-text"><strong>De gauche à droite</strong><span>Chaque vainqueur est centré entre ses 2 adversaires du tour précédent</span></div></div>
         </div>
-        <div class="h-tip"><strong>Grand Chelem :</strong> Tous les tournois se jouent en best-of-5 sets. Le premier joueur à gagner 3 sets remporte le match (3-0, 3-1 ou 3-2).</div>
+        <div class="h-tip"><strong>Grand Chelem :</strong> Messieurs en best-of-5 (3 sets gagnants). Dames en best-of-3 (2 sets gagnants).</div>
       </div>
     </div>
   </div>
@@ -963,7 +970,7 @@ function gS(i){return OV[i]!==undefined?OV[i].score:MATCHES[i].bs;}
 function isSim(i){return OV[i]&&OV[i].sim;}
 
 // ════ STORAGE ══════════════════════════════════════════════
-function save(){try{localStorage.setItem('gc_ov_'+CURRENT_TOURNAMENT,JSON.stringify(OV));}catch(e){}}
+function save(){try{var k='gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':'');localStorage.setItem(k,JSON.stringify(OV));}catch(e){}}
 function load(){try{var d=localStorage.getItem('gc_ov_rg');if(d)OV=JSON.parse(d);}catch(e){}}
 
 function updateStats(){
@@ -1130,13 +1137,12 @@ function validateScore(sc) {
     if(a>b)sA++;else if(b>a)sB++;
   }
   if (validSets === 0) return false;
-  // Avec Ab: score partiel accepté dès qu'il y a au moins 1 set
-  if (hasAb) return validSets >= 1 && validSets <= 5;
-  // Sans Ab: best-of-5 → gagnant à 3 sets, max 5 sets
-  // Combinaisons valides: 3-0, 3-1, 3-2
+  var maxSets = (CURRENT_GENDER === 'f') ? 3 : 5;
+  var setsToWin = (CURRENT_GENDER === 'f') ? 2 : 3;
+  if (hasAb) return validSets >= 1 && validSets <= maxSets;
   var winner = Math.max(sA, sB);
   var loser  = Math.min(sA, sB);
-  return (winner === 3 && loser <= 2 && validSets <= 5);
+  return (winner === setsToWin && loser < setsToWin && validSets <= maxSets);
 }
 
 // ── DÉTECTION AUTOMATIQUE DU VAINQUEUR DEPUIS LE SCORE ──
@@ -1192,26 +1198,26 @@ document.getElementById('sfield').addEventListener('input', function() {
   }
 
   // Validation nombre de sets
-  if (validSets > 0 && validSets < 3) {
-    hint.innerHTML = '<span style="color:#f09090">&#10007; Minimum 3 sets requis (' + validSets + '/3)</span>';
+  var maxSetsHint = (CURRENT_GENDER === 'f') ? 3 : 5;
+  var setsToWinHint = (CURRENT_GENDER === 'f') ? 2 : 3;
+  if (validSets > 0 && validSets < setsToWinHint) {
+    hint.innerHTML = '<span style="color:#f09090">&#10007; Minimum '+setsToWinHint+' sets requis (' + validSets + '/'+setsToWinHint+')</span>';
     updSave(); return;
   }
-  if (validSets > 5) {
-    hint.innerHTML = '<span style="color:#f09090">&#10007; Maximum 5 sets autorisés</span>';
+  if (validSets > maxSetsHint) {
+    hint.innerHTML = '<span style="color:#f09090">&#10007; Maximum '+maxSetsHint+' sets autorisés</span>';
     updSave(); return;
   }
 
   // Score complet
-  if (validSets >= 3) {
+  if (validSets >= setsToWinHint) {
     var winner = Math.max(sA,sB), loser = Math.min(sA,sB);
-    if (winner === 3) {
+    if (winner === setsToWinHint) {
       var setStr = sA > sB ? sA+'/'+sB : sB+'/'+sA;
       hint.innerHTML = '<span style="color:var(--greenl)">&#10003; Score valide &mdash; '+setStr+' sets</span>';
-      // Auto-sélection vainqueur
       var detected = sA>sB ? 0 : 1;
       if (selW < 0) selWin(detected);
-    } else if (validSets < 5) {
-      // En cours de saisie, pas encore de vainqueur à 3 sets
+    } else if (validSets < maxSetsHint) {
       hint.innerHTML = '<span style="color:rgba(245,237,216,.4)">'+sA+' / '+sB+' sets...</span>';
     }
   }
@@ -1365,10 +1371,13 @@ function simSets(nWin, nLose){
 }
 
 function simSc(){
+  if(CURRENT_GENDER==='f'){
+    return Math.random()<0.45?simSets(2,0):simSets(2,1);
+  }
   var r=Math.random();
-  if(r<0.30) return simSets(3,0); // 3-0: 30%
-  if(r<0.65) return simSets(3,1); // 3-1: 35%
-  return simSets(3,2);             // 3-2: 35%
+  if(r<0.30) return simSets(3,0);
+  if(r<0.65) return simSets(3,1);
+  return simSets(3,2);
 }
 
 function runSim(){
@@ -2071,6 +2080,7 @@ var TOURNAMENTS = {
 var RG_MATCHES = null;
 var RG_OV = null;
 var CURRENT_TOURNAMENT = 'rg';
+var CURRENT_GENDER = 'm'; // 'm' = Messieurs, 'f' = Dames
 
 function saveTournamentData(tid) {
   try {
@@ -2279,7 +2289,7 @@ function setTournament(tid) {
   if (tid === CURRENT_TOURNAMENT) return;
 
   // Sauvegarder OV du tournoi actuel
-  localStorage.setItem('gc_ov_'+CURRENT_TOURNAMENT, JSON.stringify(OV));
+  localStorage.setItem('gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':''), JSON.stringify(OV));
 
   CURRENT_TOURNAMENT = tid;
   var t = TOURNAMENTS[tid];
@@ -2295,23 +2305,26 @@ function setTournament(tid) {
   // Mettre à jour le header
   document.querySelector('.rg-logo').textContent = t.logo;
   document.querySelector('.ht h1').textContent = t.name + ' ' + t.year;
-  document.querySelector('.ht p').textContent = t.subtitle;
+  var sub = document.getElementById('tournamentSubtitle');
+  if (sub) sub.textContent = (CURRENT_GENDER==='f'?'Simple Dames':'Simple Messieurs') + ' — Tableau Interactif';
   document.getElementById('tournamentDate').textContent = t.date;
 
   // Réinitialiser OV
   OV = {};
 
-  if (tid === 'rg') {
+  if (CURRENT_GENDER === 'f') {
+    initEmptyBracket();
+    var savedF = localStorage.getItem('gc_ov_'+tid+'_f');
+    if (savedF) { try { OV = JSON.parse(savedF); } catch(e) {} }
+  } else if (tid === 'rg') {
     MATCHES = RG_MATCHES.slice();
     var savedRG = localStorage.getItem('gc_ov_rg');
     if (savedRG) { try { OV = JSON.parse(savedRG); } catch(e) {} }
   } else if (tid === 'ao') {
-    // Australian Open: données 2026 pré-chargées
     initAOBracket();
     var savedAO = localStorage.getItem('gc_ov_ao');
     if (savedAO) { try { OV = JSON.parse(savedAO); } catch(e) {} }
   } else {
-    // Wimbledon et US Open: bracket vide
     initEmptyBracket();
     var saved = localStorage.getItem('gc_ov_'+tid);
     if (saved) { try { OV = JSON.parse(saved); } catch(e) {} }
@@ -2324,6 +2337,46 @@ function setTournament(tid) {
 
   updateStats(); render();
   toast('🎾 ' + t.name + ' ' + t.year, true);
+}
+
+function setGender(g) {
+  if (g === CURRENT_GENDER) return;
+  // Sauvegarder OV courant
+  localStorage.setItem('gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':''), JSON.stringify(OV));
+  CURRENT_GENDER = g;
+  OV = {};
+  // Charger le bracket approprié
+  if (g === 'f') {
+    initEmptyBracket();
+    var savedF = localStorage.getItem('gc_ov_'+CURRENT_TOURNAMENT+'_f');
+    if (savedF) { try { OV = JSON.parse(savedF); } catch(e) {} }
+  } else {
+    if (CURRENT_TOURNAMENT === 'rg') {
+      MATCHES = RG_MATCHES.slice();
+      var savedRG = localStorage.getItem('gc_ov_rg');
+      if (savedRG) { try { OV = JSON.parse(savedRG); } catch(e) {} }
+    } else if (CURRENT_TOURNAMENT === 'ao') {
+      initAOBracket();
+      var savedAO = localStorage.getItem('gc_ov_ao');
+      if (savedAO) { try { OV = JSON.parse(savedAO); } catch(e) {} }
+    } else {
+      initEmptyBracket();
+      var saved = localStorage.getItem('gc_ov_'+CURRENT_TOURNAMENT);
+      if (saved) { try { OV = JSON.parse(saved); } catch(e) {} }
+    }
+  }
+  // Mettre à jour les boutons
+  document.getElementById('gM').className = 'g-btn' + (g==='m'?' active':'');
+  document.getElementById('gF').className = 'g-btn' + (g==='f'?' active':'');
+  // Mettre à jour le subtitle
+  var sub = document.getElementById('tournamentSubtitle');
+  if (sub) sub.textContent = (g==='f'?'Simple Dames':'Simple Messieurs') + ' — Tableau Interactif';
+  // Réinitialiser la vue
+  champVisible = false; champName = '';
+  overviewVisible = false; SQ = '';
+  document.getElementById('searchInput').value = '';
+  updateStats(); render();
+  toast('🎾 ' + (g==='f'?'Simple Dames':'Simple Messieurs'), true);
 }
 
 // ── INITIALISATION FINALE ──
@@ -2339,6 +2392,11 @@ RG_MATCHES = MATCHES.slice();
 ['ao','wim','uso'].forEach(function(tid){
   if (!localStorage.getItem('gc_ov_'+tid)) {
     localStorage.setItem('gc_ov_'+tid, '{}');
+  }
+});
+['rg','ao','wim','uso'].forEach(function(tid){
+  if (!localStorage.getItem('gc_ov_'+tid+'_f')) {
+    localStorage.setItem('gc_ov_'+tid+'_f', '{}');
   }
 });
 applyTheme(TOURNAMENTS['rg']);
