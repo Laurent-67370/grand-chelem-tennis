@@ -11,8 +11,6 @@ Tableau interactif des 4 tournois du Grand Chelem permettant de suivre les résu
 
 Le fichier `grand-chelem.html` est **100 % autonome** : il suffit de l'ouvrir dans un navigateur, sans installation ni connexion internet.
 
-> Le fichier `roland-garros-2026.html` est la version dédiée uniquement à Roland-Garros 2026.
-
 ---
 
 ## 🎾 Les 4 Grands Chelems
