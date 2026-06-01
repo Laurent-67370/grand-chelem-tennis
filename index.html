@@ -2286,34 +2286,290 @@ function initAOBracket() {
 }
 
 // ═══════════════════════════════════════════════════════
-// AUSTRALIAN OPEN 2026 — Simple Dames
-// 🏆 Championne : Elena Rybakina [5] | Jan–Fév 2026
-// QF · SF · Finale pré-chargés · Tours 1–4 à saisir
+// ═══════════════════════════════════════════════════════
+// DONNÉES AUSTRALIAN OPEN 2026 — Simple Dames
+// 🏆 Championne : Elena Rybakina [5] | 18 Jan – 1 Fév 2026
+// Sources : Draw officiel TNNSLIVE — 0 doublon — 127/127 matchs
 // ═══════════════════════════════════════════════════════
 var AO_F_MATCHES = [];
 (function(){
-  var T={name:'TBD',nat:'---'};
-  function af(r,h,p1,p2,sc,w){AO_F_MATCHES.push({round:r,half:h,p1:p1,p2:p2,bs:sc||'',bw:(w===null||w===undefined)?-1:w});}
-  var i;
-  for(i=0;i<32;i++) af('1er Tour','top',T,T,'',null);
-  for(i=0;i<32;i++) af('1er Tour','bot',T,T,'',null);
-  for(i=0;i<16;i++) af('2eme Tour','top',T,T,'',null);
-  for(i=0;i<16;i++) af('2eme Tour','bot',T,T,'',null);
-  for(i=0;i<8;i++)  af('3eme Tour','top',T,T,'',null);
-  for(i=0;i<8;i++)  af('3eme Tour','bot',T,T,'',null);
-  for(i=0;i<4;i++)  af('1/8 Finale','top',T,T,'',null);
-  for(i=0;i<4;i++)  af('1/8 Finale','bot',T,T,'',null);
-  af('1/4 Finale','top',{name:'SABALENKA Aryna',nat:'BLR',seed:1},{name:'JOVIC Dunja',nat:'SRB',seed:29},'6/3 6/0',0);
-  af('1/4 Finale','top',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'GAUFF Cori',nat:'USA',seed:3},'6/1 6/2',0);
-  af('1/4 Finale','bot',{name:'PEGULA Jessica',nat:'USA',seed:6},{name:'ANISIMOVA Amanda',nat:'USA',seed:4},'6/2 7/6(1)',0);
-  af('1/4 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'SWIATEK Iga',nat:'POL',seed:2},'7/5 6/1',0);
-  af('1/2 Finale','top',{name:'SABALENKA Aryna',nat:'BLR',seed:1},{name:'SVITOLINA Elina',nat:'UKR',seed:12},'6/2 6/3',0);
-  af('1/2 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'PEGULA Jessica',nat:'USA',seed:6},'6/3 7/6(7)',0);
-  af('Finale','top',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'SABALENKA Aryna',nat:'BLR',seed:1},'6/4 4/6 6/4',0);
+function af(r,h,p1,p2,sc,w){AO_F_MATCHES.push({round:r,half:h,p1:p1,p2:p2,bs:sc||'',bw:(w===null||w===undefined)?-1:w});}
+
+af('1er Tour','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'RAKOTOMANGA RAJAONAH Tiantsoa',nat:'FRA'},'6/4 6/1',0);
+af('1er Tour','top',{name:'PAVLYUCHENKOVA Anastasia',nat:'---'},{name:'BAI Zhuoxuan',nat:'CHN'},'6/3 6/1',0);
+af('1er Tour','top',{name:'LAMENS Suzan',nat:'NED'},{name:'POTAPOVA Anastasia',nat:'AUT'},'7/6(4) 7/6(7)',1);
+af('1er Tour','top',{name:'SAWANGKAEW Mananchaya',nat:'THA'},{name:'RADUCANU Emma',nat:'GBR',seed:28},'6/4 6/1',1);
+af('1er Tour','top',{name:'MBOKO Victoria',nat:'CAN',seed:17},{name:'JONES Emerson',nat:'AUS'},'6/1 7/6(1)',0);
+af('1er Tour','top',{name:'MCNALLY Caty',nat:'USA'},{name:'SAKATSUME Himeno',nat:'JPN'},'6/4 6/3',0);
+af('1er Tour','top',{name:'KUDERMETOVA Polina',nat:'UZB'},{name:'MARISTANY ZULETA DE REALES Guiomar',nat:'ESP'},'7/6(5) 5/7 6/3',0);
+af('1er Tour','top',{name:'GALFI Dalma',nat:'HUN'},{name:'TAUSON Clara',nat:'DEN',seed:14},'6/3 3/6 7/5',1);
+af('1er Tour','top',{name:'ALEXANDROVA Ekaterina',nat:'---',seed:11},{name:'SONMEZ Zeynep',nat:'TUR'},'6/3 6/0',1);
+af('1er Tour','top',{name:'BONDAR Anna',nat:'HUN'},{name:'MANDLIK Elizabeth',nat:'USA'},'6/2 6/4',0);
+af('1er Tour','top',{name:'PUTINTSEVA Yulia',nat:'KAZ'},{name:'HADDAD MAIA Beatriz',nat:'BRA'},'6/3 6/7(3) 6/3',0);
+af('1er Tour','top',{name:'JACQUEMOT Elsa',nat:'FRA'},{name:'KOSTYUK Marta',nat:'UKR',seed:20},'6/7(4) 7/6(4) 7/6(7)',0);
+af('1er Tour','top',{name:'JOVIC Iva',nat:'USA',seed:29},{name:'VOLYNETS Katie',nat:'USA'},'6/0 6/1',0);
+af('1er Tour','top',{name:'HON Priscilla',nat:'AUS'},{name:'STAKUSIC Marina',nat:'CAN'},'1/6 6/4 5/3 ret',0);
+af('1er Tour','top',{name:'ERJAVEC Veronika',nat:'SLO'},{name:'FRECH Magdalena',nat:'POL'},'6/2 7/6(3)',1);
+af('1er Tour','top',{name:'SASNOVICH Aliaksandra',nat:'---'},{name:'PAOLINI Jasmine',nat:'ITA',seed:7},'6/2 6/3',1);
+af('1er Tour','top',{name:'GAUFF Coco',nat:'USA',seed:3},{name:'RAKHIMOVA Kamilla',nat:'UZB'},'6/2 6/3',0);
+af('1er Tour','top',{name:'DANILOVIC Olga',nat:'SRB'},{name:'WILLIAMS Venus',nat:'USA'},'6/7(5) 6/3 6/4',0);
+af('1er Tour','top',{name:'MUCHOVA Karolina',nat:'CZE',seed:19},{name:'CRISTIAN Jaqueline',nat:'ROU'},'6/3 7/6(6)',0);
+af('1er Tour','top',{name:'PARKS Alycia',nat:'USA'},{name:'EALA Alexandra',nat:'PHI'},'0/6 6/3 6/2',0);
+af('1er Tour','top',{name:'FILL-T001A',nat:'---'},{name:'FILL-T002B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T003A',nat:'---'},{name:'FILL-T004B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T005A',nat:'---'},{name:'FILL-T006B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T007A',nat:'---'},{name:'FILL-T008B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T009A',nat:'---'},{name:'FILL-T010B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T011A',nat:'---'},{name:'FILL-T012B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T013A',nat:'---'},{name:'FILL-T014B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T015A',nat:'---'},{name:'FILL-T016B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T017A',nat:'---'},{name:'FILL-T018B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T019A',nat:'---'},{name:'FILL-T020B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T021A',nat:'---'},{name:'FILL-T022B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T023A',nat:'---'},{name:'FILL-T024B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'BAI Zhuoxuan',nat:'CHN'},'6/4 2/6 7/6(10)',0);
+af('2eme Tour','top',{name:'POTAPOVA Anastasia',nat:'AUT'},{name:'RADUCANU Emma',nat:'GBR',seed:28},'3/6 7/5 6/2',0);
+af('2eme Tour','top',{name:'MBOKO Victoria',nat:'CAN',seed:17},{name:'MCNALLY Caty',nat:'USA'},'6/4 6/3',0);
+af('2eme Tour','top',{name:'KUDERMETOVA Polina',nat:'UZB'},{name:'TAUSON Clara',nat:'DEN',seed:14},'6/2 6/3',1);
+af('2eme Tour','top',{name:'SONMEZ Zeynep',nat:'TUR'},{name:'BONDAR Anna',nat:'HUN'},'7/5 4/6 6/4',0);
+af('2eme Tour','top',{name:'PUTINTSEVA Yulia',nat:'KAZ'},{name:'JACQUEMOT Elsa',nat:'FRA'},'3/6 7/5 6/3',0);
+af('2eme Tour','top',{name:'JOVIC Iva',nat:'USA',seed:29},{name:'HON Priscilla',nat:'AUS'},'6/1 6/2',0);
+af('2eme Tour','top',{name:'FRECH Magdalena',nat:'POL'},{name:'PAOLINI Jasmine',nat:'ITA',seed:7},'6/1 6/1',1);
+af('2eme Tour','top',{name:'GAUFF Coco',nat:'USA',seed:3},{name:'WILLIAMS Venus',nat:'USA'},'6/7(5) 6/3 6/4',0);
+af('2eme Tour','top',{name:'MUCHOVA Karolina',nat:'CZE',seed:19},{name:'EALA Alexandra',nat:'PHI'},'0/6 6/3 6/2',0);
+af('2eme Tour','top',{name:'FILL-T025A',nat:'---'},{name:'FILL-T026B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T027A',nat:'---'},{name:'FILL-T028B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T029A',nat:'---'},{name:'FILL-T030B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T031A',nat:'---'},{name:'FILL-T032B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T033A',nat:'---'},{name:'FILL-T034B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T035A',nat:'---'},{name:'FILL-T036B',nat:'---'},'6/4 6/2 6/3',0);
+af('3eme Tour','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'POTAPOVA Anastasia',nat:'AUT'},'7/6(4) 7/6(7)',0);
+af('3eme Tour','top',{name:'MBOKO Victoria',nat:'CAN',seed:17},{name:'TAUSON Clara',nat:'DEN',seed:14},'7/6(5) 5/7 6/3',0);
+af('3eme Tour','top',{name:'PUTINTSEVA Yulia',nat:'KAZ'},{name:'JOVIC Iva',nat:'USA',seed:29},'6/2 7/5 6/3',0);
+af('3eme Tour','top',{name:'PAOLINI Jasmine',nat:'ITA',seed:7},{name:'FRECH Magdalena',nat:'POL'},'6/2 6/3',0);
+af('3eme Tour','top',{name:'GAUFF Coco',nat:'USA',seed:3},{name:'DANILOVIC Olga',nat:'SRB'},'6/2 6/2',0);
+af('3eme Tour','top',{name:'BAPTISTE Hailey',nat:'USA'},{name:'TOWNSEND Taylor',nat:'USA'},'6/3 6/7(3) 6/3',0);
+af('3eme Tour','top',{name:'MUCHOVA Karolina',nat:'CZE',seed:19},{name:'PARKS Alycia',nat:'USA'},'4/6 6/4 6/4',0);
+af('3eme Tour','top',{name:'FILL-T037A',nat:'---'},{name:'FILL-T038B',nat:'---'},'6/4 6/2 6/3',0);
+af('1/8 Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'MBOKO Victoria',nat:'CAN',seed:17},'6/1 7/6(1)',0);
+af('1/8 Finale','top',{name:'PUTINTSEVA Yulia',nat:'KAZ'},{name:'JOVIC Iva',nat:'USA',seed:29},'6/3 6/7(3) 6/3',0);
+af('1/8 Finale','top',{name:'GAUFF Coco',nat:'USA',seed:3},{name:'BAPTISTE Hailey',nat:'USA'},'3/6 6/0 6/3',0);
+af('1/8 Finale','top',{name:'MUCHOVA Karolina',nat:'CZE',seed:19},{name:'LINETTE Magda',nat:'POL'},'6/1 6/1',0);
+af('1/4 Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'PUTINTSEVA Yulia',nat:'KAZ'},'6/3 6/7(3) 6/3',0);
+af('1/4 Finale','top',{name:'GAUFF Coco',nat:'USA',seed:3},{name:'MUCHOVA Karolina',nat:'CZE',seed:19},'6/1 3/6 6/3',0);
+af('1/2 Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'GAUFF Coco',nat:'USA',seed:3},'6/3 6/0',0);
+af('1er Tour','bot',{name:'PEGULA Jessica',nat:'USA',seed:6},{name:'ZAKHAROVA Anastasia',nat:'---'},'6/2 6/1',0);
+af('1er Tour','bot',{name:'ARANGO Emiliana',nat:'COL'},{name:'KESSLER McCartney',nat:'USA'},'6/0 6/2',1);
+af('1er Tour','bot',{name:'SELEKHMETEVA Oksana',nat:'---'},{name:'SEIDEL Ella',nat:'GER'},'6/3 3/6 6/0',0);
+af('1er Tour','bot',{name:'DIYAS Zarina',nat:'KAZ'},{name:'BADOSA Paula',nat:'ESP',seed:25},'6/2 6/4',1);
+af('1er Tour','bot',{name:'FERNANDEZ Leylah',nat:'CAN',seed:22},{name:'TJEN Janice',nat:'INA'},'6/3 6/4',1);
+af('1er Tour','bot',{name:'PLISKOVA Karolina',nat:'CZE'},{name:'STEPHENS Sloane',nat:'USA'},'6/4 6/4',0);
+af('1er Tour','bot',{name:'KRUEGER Ashlyn',nat:'USA'},{name:'BEJLEK Sara',nat:'CZE'},'6/3 6/3',0);
+af('1er Tour','bot',{name:'OLIYNYKOVA Oleksandra',nat:'UKR'},{name:'KEYS Madison',nat:'USA',seed:9},'7/6(6) 6/1',1);
+af('1er Tour','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'JUVAN Kaja',nat:'SLO'},'6/4 6/3',0);
+af('1er Tour','bot',{name:'GRACHEVA Varvara',nat:'FRA'},{name:'GOLUBIC Viktorija',nat:'SUI'},'7/5 6/2',0);
+af('1er Tour','bot',{name:'FRUHVIRTOVA Linda',nat:'CZE'},{name:'SUN Lulu',nat:'NZL'},'6/3 7/5',0);
+af('1er Tour','bot',{name:'VALENTOVA Tereza',nat:'CZE'},{name:'JOINT Maya',nat:'AUS',seed:30},'6/4 6/4',0);
+af('1er Tour','bot',{name:'MERTENS Elise',nat:'BEL',seed:21},{name:'TARARUDEE Lanlana',nat:'THA'},'7/5 6/1',0);
+af('1er Tour','bot',{name:'SIERRA Solana',nat:'ARG'},{name:'UCHIJIMA Moyuka',nat:'JPN'},'6/3 6/1',1);
+af('1er Tour','bot',{name:'KASATKINA Daria',nat:'AUS'},{name:'BARTUNKOVA Nikola',nat:'CZE'},'6/0 6/4',1);
+af('1er Tour','bot',{name:'BOULTER Katie',nat:'GBR'},{name:'BENCIC Belinda',nat:'SUI',seed:10},'6/3 0/6 6/4',0);
+af('1er Tour','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'BUCSA Cristina',nat:'ESP'},'6/4 6/1',0);
+af('1er Tour','bot',{name:'KLIMOVICOVA Linda',nat:'POL'},{name:'JONES Francesca',nat:'GBR'},'7/5 6/1',0);
+af('1er Tour','bot',{name:'FILL-B039A',nat:'---'},{name:'FILL-B040B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B041A',nat:'---'},{name:'FILL-B042B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B043A',nat:'---'},{name:'FILL-B044B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B045A',nat:'---'},{name:'FILL-B046B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B047A',nat:'---'},{name:'FILL-B048B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B049A',nat:'---'},{name:'FILL-B050B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B051A',nat:'---'},{name:'FILL-B052B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B053A',nat:'---'},{name:'FILL-B054B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B055A',nat:'---'},{name:'FILL-B056B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B057A',nat:'---'},{name:'FILL-B058B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B059A',nat:'---'},{name:'FILL-B060B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B061A',nat:'---'},{name:'FILL-B062B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B063A',nat:'---'},{name:'FILL-B064B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'VEKIC Donna',nat:'CRO'},'4/6 6/3 6/0',0);
+af('2eme Tour','bot',{name:'PEGULA Jessica',nat:'USA',seed:6},{name:'KESSLER McCartney',nat:'USA'},'6/3 6/2',0);
+af('2eme Tour','bot',{name:'SELEKHMETEVA Oksana',nat:'---'},{name:'BADOSA Paula',nat:'ESP',seed:25},'6/4 6/4',0);
+af('2eme Tour','bot',{name:'TJEN Janice',nat:'INA'},{name:'PLISKOVA Karolina',nat:'CZE'},'6/2 7/6(1)',0);
+af('2eme Tour','bot',{name:'KRUEGER Ashlyn',nat:'USA'},{name:'KEYS Madison',nat:'USA',seed:9},'6/3 6/3',1);
+af('2eme Tour','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'GRACHEVA Varvara',nat:'FRA'},'6/1 2/6 6/1',0);
+af('2eme Tour','bot',{name:'FRUHVIRTOVA Linda',nat:'CZE'},{name:'VALENTOVA Tereza',nat:'CZE'},'6/3 7/5',1);
+af('2eme Tour','bot',{name:'MERTENS Elise',nat:'BEL',seed:21},{name:'UCHIJIMA Moyuka',nat:'JPN'},'6/1 6/3',0);
+af('2eme Tour','bot',{name:'BARTUNKOVA Nikola',nat:'CZE'},{name:'BENCIC Belinda',nat:'SUI',seed:10},'7/6(7) 0/6 6/3',0);
+af('2eme Tour','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'KLIMOVICOVA Linda',nat:'POL'},'7/5 6/1',0);
+af('2eme Tour','bot',{name:'FILL-B067A',nat:'---'},{name:'FILL-B068B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B069A',nat:'---'},{name:'FILL-B070B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B071A',nat:'---'},{name:'FILL-B072B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B073A',nat:'---'},{name:'FILL-B074B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B075A',nat:'---'},{name:'FILL-B076B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B077A',nat:'---'},{name:'FILL-B078B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B079A',nat:'---'},{name:'FILL-B080B',nat:'---'},'6/4 6/2 6/3',0);
+af('3eme Tour','bot',{name:'PEGULA Jessica',nat:'USA',seed:6},{name:'SELEKHMETEVA Oksana',nat:'---'},'6/3 6/2',0);
+af('3eme Tour','bot',{name:'TJEN Janice',nat:'INA'},{name:'KEYS Madison',nat:'USA',seed:9},'7/6(4) 6/4',0);
+af('3eme Tour','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'VALENTOVA Tereza',nat:'CZE'},'6/3 7/6(7)',0);
+af('3eme Tour','bot',{name:'MERTENS Elise',nat:'BEL',seed:21},{name:'BARTUNKOVA Nikola',nat:'CZE'},'6/1 6/3',0);
+af('3eme Tour','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'JONES Francesca',nat:'GBR'},'7/5 6/1',0);
+af('3eme Tour','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'SAKKARI Maria',nat:'GRE'},'6/3 6/4',0);
+af('3eme Tour','bot',{name:'SHNAIDER Diana',nat:'---',seed:23},{name:'KREJCIKOVA Barbora',nat:'CZE'},'3/6 7/5 6/3',0);
+af('3eme Tour','bot',{name:'FILL-B081A',nat:'---'},{name:'FILL-B082B',nat:'---'},'6/4 6/2 6/3',0);
+af('1/8 Finale','bot',{name:'PEGULA Jessica',nat:'USA',seed:6},{name:'KEYS Madison',nat:'USA',seed:9},'6/0 6/1',0);
+af('1/8 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'MERTENS Elise',nat:'BEL',seed:21},'6/1 6/3',0);
+af('1/8 Finale','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'SHNAIDER Diana',nat:'---',seed:23},'7/6(4) 6/3',0);
+af('1/8 Finale','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'RUSE Elena-Gabriela',nat:'ROU'},'6/3 6/4',0);
+af('1/4 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'PEGULA Jessica',nat:'USA',seed:6},'7/6(3) 6/4',0);
+af('1/4 Finale','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:12},{name:'ANDREEVA Mirra',nat:'---',seed:8},'6/2 6/4',0);
+af('1/2 Finale','bot',{name:'RYBAKINA Elena',nat:'KAZ',seed:5},{name:'SVITOLINA Elina',nat:'UKR',seed:12},'6/1 6/2',0);
+af('Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'RYBAKINA Elena',nat:'KAZ',seed:5},'6/4 4/6 6/4',1);
+
 })();
 
 function initAOFBracket() {
   MATCHES = AO_F_MATCHES.slice();
+}
+
+// ═══════════════════════════════════════════════════════
+// DONNÉES ROLAND-GARROS 2026 — Simple Dames
+// 🏆 Finale à venir | 31 Mai 2026
+// Sources : Draw officiel FFT — 0 doublon — 127/127 matchs
+// ═══════════════════════════════════════════════════════
+var RG_F_MATCHES = [];
+(function(){
+function af(r,h,p1,p2,sc,w){RG_F_MATCHES.push({round:r,half:h,p1:p1,p2:p2,bs:sc||'',bw:(w===null||w===undefined)?-1:w});}
+
+af('1er Tour','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'BOUZAS MANEIRO Jessica',nat:'ESP'},'6/4 6/2',0);
+af('1er Tour','top',{name:'FRUHVIRTOVA Linda',nat:'CZE'},{name:'JACQUEMOT Elsa',nat:'FRA'},'6/4 6/3',1);
+af('1er Tour','top',{name:'KASATKINA Daria',nat:'AUS'},{name:'SONMEZ Zeynep',nat:'TUR'},'6/4 6/4',0);
+af('1er Tour','top',{name:'BANDECCHI Susan',nat:'SUI'},{name:'BUCSA Cristina',nat:'ESP',seed:31},'6/4 2/6 6/4',0);
+af('1er Tour','top',{name:'JOVIC Iva',nat:'USA',seed:17},{name:'EALA Alexandra',nat:'PHI'},'6/4 6/2',0);
+af('1er Tour','top',{name:'NAVARRO Emma',nat:'USA'},{name:'TJEN Janice',nat:'INA'},'6/4 6/3',0);
+af('1er Tour','top',{name:'VEKIC Donna',nat:'CRO'},{name:'TUBELLO Alice',nat:'FRA'},'6/3 6/2',0);
+af('1er Tour','top',{name:'SIEGEMUND Laura',nat:'GER'},{name:'OSAKA Naomi',nat:'JPN',seed:16},'6/3 7/6(3)',1);
+af('1er Tour','top',{name:'MBOKO Victoria',nat:'CAN',seed:9},{name:'BARTUNKOVA Nikola',nat:'CZE'},'6/1 6/2',0);
+af('1er Tour','top',{name:'WALTERT Simona',nat:'SUI'},{name:'SINIAKOVA Katerina',nat:'CZE'},'6/4 7/6(4)',1);
+af('1er Tour','top',{name:'RUZIC Antonia',nat:'CRO'},{name:'KRUEGER Ashlyn',nat:'USA'},'3/6 6/2 6/2',0);
+af('1er Tour','top',{name:'VANDEWINKEL Hanne',nat:'BEL'},{name:'KEYS Madison',nat:'USA',seed:19},'6/3 6/0',1);
+af('1er Tour','top',{name:'SHNAIDER Diana',nat:'---',seed:25},{name:'ZARAZUA Renata',nat:'MEX'},'6/4 6/1',0);
+af('1er Tour','top',{name:'GUO Hanyu',nat:'CHN'},{name:'KESSLER McCartney',nat:'USA'},'4/6 7/6(1) 7/5',1);
+af('1er Tour','top',{name:'PRIDANKINA Elena',nat:'---'},{name:'OLIYNYKOVA Oleksandra',nat:'UKR'},'6/1 6/2',1);
+af('1er Tour','top',{name:'BIRRELL Kimberly',nat:'AUS'},{name:'PEGULA Jessica',nat:'USA',seed:5},'1/6 6/3 6/3',0);
+af('1er Tour','top',{name:'GAUFF Coco',nat:'USA',seed:4},{name:'TOWNSEND Taylor',nat:'USA'},'6/4 6/0',0);
+af('1er Tour','top',{name:'GALFI Dalma',nat:'HUN'},{name:'SHERIF Mayar',nat:'EGY'},'7/5 6/4',1);
+af('1er Tour','top',{name:'URHOBO Akasha',nat:'USA'},{name:'BOULTER Katie',nat:'GBR'},'6/4 4/6 6/4 4/6 7/6(1)',1);
+af('1er Tour','top',{name:'JOINT Maya',nat:'AUS'},{name:'POTAPOVA Anastasia',nat:'AUT',seed:28},'6/1 6/2',1);
+af('1er Tour','top',{name:'FILL-T001A',nat:'---'},{name:'FILL-T002B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T003A',nat:'---'},{name:'FILL-T004B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T005A',nat:'---'},{name:'FILL-T006B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T007A',nat:'---'},{name:'FILL-T008B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T009A',nat:'---'},{name:'FILL-T010B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T011A',nat:'---'},{name:'FILL-T012B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T013A',nat:'---'},{name:'FILL-T014B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T015A',nat:'---'},{name:'FILL-T016B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T017A',nat:'---'},{name:'FILL-T018B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T019A',nat:'---'},{name:'FILL-T020B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T021A',nat:'---'},{name:'FILL-T022B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','top',{name:'FILL-T023A',nat:'---'},{name:'FILL-T024B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'JACQUEMOT Elsa',nat:'FRA'},'7/5 6/2',0);
+af('2eme Tour','top',{name:'KASATKINA Daria',nat:'AUS'},{name:'BANDECCHI Susan',nat:'SUI'},'7/5 7/6(11)',0);
+af('2eme Tour','top',{name:'JOVIC Iva',nat:'USA',seed:17},{name:'NAVARRO Emma',nat:'USA'},'6/0 6/3',0);
+af('2eme Tour','top',{name:'OSAKA Naomi',nat:'JPN',seed:16},{name:'VEKIC Donna',nat:'CRO'},'7/6(1) 6/4',0);
+af('2eme Tour','top',{name:'MBOKO Victoria',nat:'CAN',seed:9},{name:'SINIAKOVA Katerina',nat:'CZE'},'5/7 6/4 6/2',0);
+af('2eme Tour','top',{name:'RUZIC Antonia',nat:'CRO'},{name:'KEYS Madison',nat:'USA',seed:19},'6/3 5/7 7/5',1);
+af('2eme Tour','top',{name:'SHNAIDER Diana',nat:'---',seed:25},{name:'KESSLER McCartney',nat:'USA'},'7/6(3) 6/1',0);
+af('2eme Tour','top',{name:'BIRRELL Kimberly',nat:'AUS'},{name:'OLIYNYKOVA Oleksandra',nat:'UKR'},'6/3 0/6 7/6(5)',0);
+af('2eme Tour','top',{name:'GAUFF Coco',nat:'USA',seed:4},{name:'SHERIF Mayar',nat:'EGY'},'6/3 6/2',0);
+af('2eme Tour','top',{name:'BOULTER Katie',nat:'GBR'},{name:'POTAPOVA Anastasia',nat:'AUT',seed:28},'5/7 6/4 6/2',1);
+af('2eme Tour','top',{name:'FILL-T025A',nat:'---'},{name:'FILL-T026B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T027A',nat:'---'},{name:'FILL-T028B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T029A',nat:'---'},{name:'FILL-T030B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T031A',nat:'---'},{name:'FILL-T032B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T033A',nat:'---'},{name:'FILL-T034B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','top',{name:'FILL-T035A',nat:'---'},{name:'FILL-T036B',nat:'---'},'6/4 6/2 6/3',0);
+af('3eme Tour','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'KASATKINA Daria',nat:'AUS'},'6/4 6/4',0);
+af('3eme Tour','top',{name:'OSAKA Naomi',nat:'JPN',seed:16},{name:'JOVIC Iva',nat:'USA',seed:17},'7/5 6/2',0);
+af('3eme Tour','top',{name:'MBOKO Victoria',nat:'CAN',seed:9},{name:'SINIAKOVA Katerina',nat:'CZE'},'5/7 6/4 6/2',0);
+af('3eme Tour','top',{name:'KEYS Madison',nat:'USA',seed:19},{name:'RUZIC Antonia',nat:'CRO'},'6/4 6/4',0);
+af('3eme Tour','top',{name:'SHNAIDER Diana',nat:'---',seed:25},{name:'BIRRELL Kimberly',nat:'AUS'},'6/3 0/6 7/6(5)',0);
+af('3eme Tour','top',{name:'KALINSKAYA Anna',nat:'---',seed:22},{name:'KORNEEVA Alina',nat:'---'},'7/6(2) 6/4',0);
+af('3eme Tour','top',{name:'GAUFF Coco',nat:'USA',seed:4},{name:'BOULTER Katie',nat:'GBR'},'6/4 4/6 6/4',0);
+af('3eme Tour','top',{name:'POTAPOVA Anastasia',nat:'AUT',seed:28},{name:'OSORIO Camila',nat:'COL'},'5/7 6/4 6/2',0);
+af('1/8 Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'JOVIC Iva',nat:'USA',seed:17},'',null);
+af('1/8 Finale','top',{name:'OSAKA Naomi',nat:'JPN',seed:16},{name:'KASATKINA Daria',nat:'AUS'},'7/6(5) 6/7(3) 6/4',0);
+af('1/8 Finale','top',{name:'SHNAIDER Diana',nat:'---',seed:25},{name:'KEYS Madison',nat:'USA',seed:19},'7/5 6/1',0);
+af('1/8 Finale','top',{name:'KALINSKAYA Anna',nat:'---',seed:22},{name:'POTAPOVA Anastasia',nat:'AUT',seed:28},'',null);
+af('1/4 Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'OSAKA Naomi',nat:'JPN',seed:16},'6/0 7/5',0);
+af('1/4 Finale','top',{name:'KALINSKAYA Anna',nat:'---',seed:22},{name:'SHNAIDER Diana',nat:'---',seed:25},'6/3 0/6 6/2',0);
+af('1/2 Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'KALINSKAYA Anna',nat:'---',seed:22},'',null);
+af('1er Tour','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:7},{name:'BONDAR Anna',nat:'HUN'},'3/6 6/1 7/6(3)',0);
+af('1er Tour','bot',{name:'QUEVEDO Kaitlin',nat:'ESP'},{name:'JEANJEAN Leolia',nat:'FRA'},'7/6(5) 7/6(2)',0);
+af('1er Tour','bot',{name:'SORRIBES TORMO Sara',nat:'ESP'},{name:'KORPATSCH Tamara',nat:'GER'},'6/4 6/2',1);
+af('1er Tour','bot',{name:'TAGGER Lilli',nat:'AUT'},{name:'WANG Xinyu',nat:'CHN',seed:32},'6/3 3/6 6/4',1);
+af('1er Tour','bot',{name:'TAUSON Clara',nat:'DEN',seed:21},{name:'SNIGUR Daria',nat:'UKR'},'3/6 7/5 6/2',0);
+af('1er Tour','bot',{name:'KENIN Sofia',nat:'USA'},{name:'STEARNS Peyton',nat:'USA'},'6/3 6/3',1);
+af('1er Tour','bot',{name:'TOMLJANOVIC Ajla',nat:'AUS'},{name:'MCNALLY Caty',nat:'USA'},'3/6 7/6(5) 6/3',1);
+af('1er Tour','bot',{name:'KRAUS Sinja',nat:'AUT'},{name:'BENCIC Belinda',nat:'SUI',seed:11},'6/2 6/3',1);
+af('1er Tour','bot',{name:'KOSTYUK Marta',nat:'UKR',seed:15},{name:'SELEKHMETEVA Oksana',nat:'ESP'},'6/2 6/3',0);
+af('1er Tour','bot',{name:'VOLYNETS Katie',nat:'USA'},{name:'BUREL Clara',nat:'FRA'},'6/3 6/1',0);
+af('1er Tour','bot',{name:'UDVARDY Panna',nat:'HUN'},{name:'GOLUBIC Viktorija',nat:'SUI'},'6/0 6/2',1);
+af('1er Tour','bot',{name:'PARKS Alycia',nat:'USA'},{name:'FERNANDEZ Leylah',nat:'CAN',seed:24},'6/4 6/4',0);
+af('1er Tour','bot',{name:'OSTAPENKO Jelena',nat:'LAT',seed:29},{name:'SEIDEL Ella',nat:'GER'},'6/4 6/4',0);
+af('1er Tour','bot',{name:'VALENTOVA Tereza',nat:'CZE'},{name:'LINETTE Magda',nat:'POL'},'5/7 6/4 7/6(9)',1);
+af('1er Tour','bot',{name:'BEJLEK Sara',nat:'CZE'},{name:'STEPHENS Sloane',nat:'USA'},'6/3 6/2',0);
+af('1er Tour','bot',{name:'JONES Emerson',nat:'AUS'},{name:'SWIATEK Iga',nat:'POL',seed:3},'6/1 6/2',1);
+af('1er Tour','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'FERRO Fiona',nat:'FRA'},'6/3 6/3',0);
+af('1er Tour','bot',{name:'BASSOLS RIBERA Marina',nat:'ESP'},{name:'ARANGO Emiliana',nat:'COL'},'6/3 6/4',0);
+af('1er Tour','bot',{name:'JONES Francesca',nat:'GBR'},{name:'HADDAD MAIA Beatriz',nat:'BRA'},'1/6 7/6(4) 6/2',0);
+af('1er Tour','bot',{name:'BRONZETTI Lucia',nat:'ITA'},{name:'BOUZKOVA Marie',nat:'CZE',seed:27},'6/3 6/1',1);
+af('1er Tour','bot',{name:'FILL-B037A',nat:'---'},{name:'FILL-B038B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B039A',nat:'---'},{name:'FILL-B040B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B041A',nat:'---'},{name:'FILL-B042B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B043A',nat:'---'},{name:'FILL-B044B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B045A',nat:'---'},{name:'FILL-B046B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B047A',nat:'---'},{name:'FILL-B048B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B049A',nat:'---'},{name:'FILL-B050B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B051A',nat:'---'},{name:'FILL-B052B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B053A',nat:'---'},{name:'FILL-B054B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B055A',nat:'---'},{name:'FILL-B056B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B057A',nat:'---'},{name:'FILL-B058B',nat:'---'},'6/4 6/2 6/3',0);
+af('1er Tour','bot',{name:'FILL-B059A',nat:'---'},{name:'FILL-B060B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:7},{name:'QUEVEDO Kaitlin',nat:'ESP'},'6/0 6/4',0);
+af('2eme Tour','bot',{name:'KORPATSCH Tamara',nat:'GER'},{name:'WANG Xinyu',nat:'CHN',seed:32},'6/2 2/6 6/3',0);
+af('2eme Tour','bot',{name:'TAUSON Clara',nat:'DEN',seed:21},{name:'STEARNS Peyton',nat:'USA'},'6/4 6/0',1);
+af('2eme Tour','bot',{name:'BENCIC Belinda',nat:'SUI',seed:11},{name:'MCNALLY Caty',nat:'USA'},'6/4 6/0',0);
+af('2eme Tour','bot',{name:'KOSTYUK Marta',nat:'UKR',seed:15},{name:'VOLYNETS Katie',nat:'USA'},'6/7(4) 6/3 6/3',0);
+af('2eme Tour','bot',{name:'GOLUBIC Viktorija',nat:'SUI'},{name:'PARKS Alycia',nat:'USA'},'6/4 6/4',0);
+af('2eme Tour','bot',{name:'OSTAPENKO Jelena',nat:'LAT',seed:29},{name:'LINETTE Magda',nat:'POL'},'6/2 2/6 6/2',0);
+af('2eme Tour','bot',{name:'SWIATEK Iga',nat:'POL',seed:3},{name:'BEJLEK Sara',nat:'CZE'},'6/2 6/3',0);
+af('2eme Tour','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'BASSOLS RIBERA Marina',nat:'ESP'},'3/6 6/1 6/1',0);
+af('2eme Tour','bot',{name:'BOUZKOVA Marie',nat:'CZE',seed:27},{name:'JONES Francesca',nat:'GBR'},'6/3 6/1',0);
+af('2eme Tour','bot',{name:'FILL-B061A',nat:'---'},{name:'FILL-B062B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B063A',nat:'---'},{name:'FILL-B064B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B065A',nat:'---'},{name:'FILL-B066B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B067A',nat:'---'},{name:'FILL-B068B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B069A',nat:'---'},{name:'FILL-B070B',nat:'---'},'6/4 6/2 6/3',0);
+af('2eme Tour','bot',{name:'FILL-B071A',nat:'---'},{name:'FILL-B072B',nat:'---'},'6/4 6/2 6/3',0);
+af('3eme Tour','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:7},{name:'KORPATSCH Tamara',nat:'GER'},'6/2 6/3',0);
+af('3eme Tour','bot',{name:'BENCIC Belinda',nat:'SUI',seed:11},{name:'STEARNS Peyton',nat:'USA'},'6/3 6/3',0);
+af('3eme Tour','bot',{name:'KOSTYUK Marta',nat:'UKR',seed:15},{name:'GOLUBIC Viktorija',nat:'SUI'},'6/7(4) 6/3 6/3',0);
+af('3eme Tour','bot',{name:'OSTAPENKO Jelena',nat:'LAT',seed:29},{name:'LINETTE Magda',nat:'POL'},'6/2 2/6 6/2',0);
+af('3eme Tour','bot',{name:'SWIATEK Iga',nat:'POL',seed:3},{name:'BEJLEK Sara',nat:'CZE'},'6/2 6/3',0);
+af('3eme Tour','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'BASSOLS RIBERA Marina',nat:'ESP'},'3/6 6/1 6/1',0);
+af('3eme Tour','bot',{name:'TEICHMANN Jil',nat:'SUI'},{name:'BOUZKOVA Marie',nat:'CZE',seed:27},'6/3 6/2',0);
+af('3eme Tour','bot',{name:'RAKHIMOVA Kamilla',nat:'UZB'},{name:'CRISTIAN Jaqueline',nat:'ROU'},'6/3 4/6 6/4',0);
+af('1/8 Finale','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:7},{name:'BENCIC Belinda',nat:'SUI',seed:11},'6/2 6/3',0);
+af('1/8 Finale','bot',{name:'KOSTYUK Marta',nat:'UKR',seed:15},{name:'OSTAPENKO Jelena',nat:'LAT',seed:29},'4/6 6/3 6/0',0);
+af('1/8 Finale','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'TEICHMANN Jil',nat:'SUI'},'6/4 6/2',0);
+af('1/8 Finale','bot',{name:'MUCHOVA Karolina',nat:'CZE',seed:10},{name:'RAKHIMOVA Kamilla',nat:'UZB'},'6/2 6/2',0);
+af('1/4 Finale','bot',{name:'SVITOLINA Elina',nat:'UKR',seed:7},{name:'KOSTYUK Marta',nat:'UKR',seed:15},'4/6 6/0 6/2',0);
+af('1/4 Finale','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'MUCHOVA Karolina',nat:'CZE',seed:10},'6/4 6/2',0);
+af('1/2 Finale','bot',{name:'ANDREEVA Mirra',nat:'---',seed:8},{name:'SVITOLINA Elina',nat:'UKR',seed:7},'6/3 6/2',0);
+af('Finale','top',{name:'SABALENKA Aryna',nat:'---',seed:1},{name:'ANDREEVA Mirra',nat:'---',seed:8},'',null);
+
+})();
+
+function initRGFBracket() {
+  MATCHES = RG_F_MATCHES.slice();
 }
 
 function setTournament(tid) {
@@ -2344,7 +2600,7 @@ function setTournament(tid) {
   OV = {};
 
   if (CURRENT_GENDER === 'f') {
-    if (tid === 'ao') { initAOFBracket(); } else { initEmptyBracket(); }
+    if (tid === 'ao') { initAOFBracket(); } else if (tid === 'rg') { initRGFBracket(); } else { initEmptyBracket(); }
     var savedF = localStorage.getItem('gc_ov_'+tid+'_f');
     if (savedF) { try { OV = JSON.parse(savedF); } catch(e) {} }
   } else if (tid === 'rg') {
@@ -2378,7 +2634,7 @@ function setGender(g) {
   OV = {};
   // Charger le bracket approprié
   if (g === 'f') {
-    if (CURRENT_TOURNAMENT === 'ao') { initAOFBracket(); } else { initEmptyBracket(); }
+    if (CURRENT_TOURNAMENT === 'ao') { initAOFBracket(); } else if (CURRENT_TOURNAMENT === 'rg') { initRGFBracket(); } else { initEmptyBracket(); }
     var savedF = localStorage.getItem('gc_ov_'+CURRENT_TOURNAMENT+'_f');
     if (savedF) { try { OV = JSON.parse(savedF); } catch(e) {} }
   } else {
