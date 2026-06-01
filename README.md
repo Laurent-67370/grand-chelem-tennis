@@ -3,17 +3,15 @@
 > **4 tournois · 128 joueurs · Best-of-5 sets**  
 > Application HTML autonome, sans serveur, sans dépendance externe.
 
-## 🌐 Application en ligne
-
-**[→ Ouvrir l'application](https://laurent-67370.github.io/grand-chelem-tennis/)**
-
 ---
 
 ## 📋 Présentation
 
 Tableau interactif des 4 tournois du Grand Chelem permettant de suivre les résultats, saisir les scores des matchs à venir et simuler la suite du tournoi.
 
-Le fichier `index.html` est **100 % autonome** : il suffit de l'ouvrir dans un navigateur, sans installation ni connexion internet.
+Le fichier `grand-chelem.html` est **100 % autonome** : il suffit de l'ouvrir dans un navigateur, sans installation ni connexion internet.
+
+> Le fichier `roland-garros-2026.html` est la version dédiée uniquement à Roland-Garros 2026.
 
 ---
 
