@@ -1,0 +1,35 @@
+{
+  "name": "Grand Chelem 2026",
+  "short_name": "Grand Chelem",
+  "description": "Tableau interactif des 4 Grands Chelems 2026",
+  "start_url": "/grand-chelem-tennis/",
+  "scope": "/grand-chelem-tennis/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1A0F08",
+  "theme_color": "#C85B2A",
+  "lang": "fr",
+  "categories": ["sports", "entertainment"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/screenshot.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
