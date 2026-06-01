@@ -530,6 +530,211 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
 .g-btn{background:rgba(255,255,255,.04);border:1px solid rgba(200,91,42,.2);color:rgba(245,237,216,.55);padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .g-btn:hover{border-color:var(--cll);color:var(--cream);}
 .g-btn.active{background:var(--clay);border-color:var(--clay);color:#fff;}
+
+/* ═══════════════════════════════════════════════════
+   VUE LISTE MOBILE — Vue condensée par rounds
+   ═══════════════════════════════════════════════════ */
+
+/* Toggle vue */
+#viewToggle {
+  display: none; /* visible uniquement mobile */
+}
+
+/* Container vue liste */
+#listView {
+  display: none;
+  padding: 8px 10px 80px;
+}
+#listView.visible { display: block; }
+
+/* Navigation rounds (swipe/onglets) */
+.lv-rounds {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 6px 0 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  position: sticky;
+  top: 0;
+  background: var(--dark);
+  z-index: 10;
+  padding-top: 4px;
+}
+.lv-rounds::-webkit-scrollbar { display: none; }
+
+.lv-rtab {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: 1px solid rgba(200,91,42,.3);
+  background: rgba(200,91,42,.07);
+  color: rgba(245,237,216,.5);
+  transition: all .2s;
+  white-space: nowrap;
+}
+.lv-rtab.active {
+  background: var(--tc, #C85B2A);
+  color: #fff;
+  border-color: var(--tc, #C85B2A);
+}
+.lv-rtab .lv-rtab-count {
+  font-size: 9px;
+  opacity: 0.7;
+  margin-left: 3px;
+}
+
+/* Zone matchs du round sélectionné */
+.lv-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+/* Carte match */
+.lv-card {
+  background: var(--card, #1e293b);
+  border: 1px solid rgba(200,91,42,.15);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.lv-card.pending {
+  border-color: rgba(200,91,42,.35);
+  cursor: pointer;
+}
+.lv-card.pending:active { opacity: 0.85; }
+.lv-card.done { border-color: rgba(255,255,255,.06); }
+
+/* Label round dans la carte (half) */
+.lv-half {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(200,91,42,.7);
+  text-transform: uppercase;
+  padding: 6px 12px 0;
+}
+
+/* Deux joueurs */
+.lv-players {
+  padding: 6px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lv-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-radius: 6px;
+  transition: background .15s;
+}
+.lv-player.winner {
+  background: rgba(200,91,42,.08);
+  padding: 5px 6px;
+  margin: 0 -6px;
+}
+
+.lv-flag {
+  font-size: 15px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lv-seed {
+  font-size: 9px;
+  color: var(--tc, #C85B2A);
+  font-weight: 700;
+  min-width: 18px;
+  flex-shrink: 0;
+}
+.lv-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cream, #f5edd8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lv-player.winner .lv-name {
+  font-weight: 700;
+  color: #fff;
+}
+.lv-score {
+  font-size: 11px;
+  color: rgba(245,237,216,.55);
+  white-space: nowrap;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.lv-player.winner .lv-score {
+  color: var(--tc, #C85B2A);
+  font-weight: 600;
+}
+
+/* Séparateur entre joueurs */
+.lv-sep {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,.04);
+  margin: 0 12px;
+}
+
+/* Badge "À venir" */
+.lv-pending-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  background: rgba(200,91,42,.15);
+  color: var(--tc, #C85B2A);
+  border-radius: 10px;
+  margin-left: auto;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Abandon / WO */
+.lv-special {
+  font-size: 10px;
+  color: rgba(245,237,216,.35);
+  padding: 0 12px 6px;
+  font-style: italic;
+}
+
+/* Bouton toggle Bracket/Liste */
+#viewToggle {
+  position: fixed;
+  bottom: 72px;
+  right: 14px;
+  z-index: 900;
+  background: var(--tc, #C85B2A);
+  color: #fff;
+  border: none;
+  border-radius: 28px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(200,91,42,.45);
+  display: none;
+  align-items: center;
+  gap: 7px;
+  font-family: 'DM Sans', sans-serif;
+  transition: transform .15s;
+}
+#viewToggle:active { transform: scale(0.95); }
+
+@media(max-width: 600px) {
+  #viewToggle { display: flex; }
+}
+
 </style>
 </head>
 <body>
@@ -590,6 +795,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-o
   <div id="champPanel"></div>
   <div id="searchResults"></div>
   <div id="bracketView"></div>
+  <div id="listView"></div>
 </div>
 
 <div class="ov" id="mo">
@@ -976,7 +1182,7 @@ function gS(i){return OV[i]!==undefined?OV[i].score:MATCHES[i].bs;}
 function isSim(i){return OV[i]&&OV[i].sim;}
 
 // ════ STORAGE ══════════════════════════════════════════════
-function save(){try{var k='gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':'');localStorage.setItem(k,JSON.stringify(OV));}catch(e){}}
+function save(){lvRefreshIfActive();try{var k='gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':'');localStorage.setItem(k,JSON.stringify(OV));}catch(e){}}
 function load(){try{var d=localStorage.getItem('gc_ov_rg');if(d)OV=JSON.parse(d);}catch(e){}}
 
 function updateStats(){
@@ -2705,7 +2911,204 @@ applyTheme(TOURNAMENTS['rg']);
 })();
 updateStats(); render();
 
+
+
+// ══════════════════════════════════════════════════════════
+// VUE LISTE MOBILE
+// ══════════════════════════════════════════════════════════
+
+var LIST_VIEW_ACTIVE = false;
+var LIST_ROUND_IDX   = 0;
+
+var ROUND_LABELS = [
+  '1er Tour', '2eme Tour', '3eme Tour',
+  '1/8 Finale', '1/4 Finale', '1/2 Finale', 'Finale'
+];
+var ROUND_SHORT = ['R1','R2','R3','1/8','QF','SF','F'];
+
+function toggleListView() {
+  LIST_VIEW_ACTIVE = !LIST_VIEW_ACTIVE;
+  var btn   = document.getElementById('viewToggle');
+  var icon  = document.getElementById('viewToggleIcon');
+  var label = document.getElementById('viewToggleLabel');
+  var bv    = document.getElementById('bracketView');
+  var lv    = document.getElementById('listView');
+  var ovp   = document.getElementById('overviewPanel');
+  var cp    = document.getElementById('champPanel');
+  if (LIST_VIEW_ACTIVE) {
+    icon.textContent  = '⊞';
+    label.textContent = 'Bracket';
+    bv.style.display  = 'none';
+    if (ovp) ovp.classList.remove('visible');
+    if (cp)  cp.classList.remove('visible');
+    lv.classList.add('visible');
+    // Ouvrir sur le premier round avec matchs à venir, sinon dernier round joué
+    LIST_ROUND_IDX = getBestRoundIndex();
+    renderListView();
+  } else {
+    icon.textContent  = '☰';
+    label.textContent = 'Liste';
+    bv.style.display  = '';
+    lv.classList.remove('visible');
+    buildBracket && buildBracket();
+  }
+}
+
+function getBestRoundIndex() {
+  // Trouver le premier round avec des matchs à venir
+  for (var i = 0; i < ROUND_LABELS.length; i++) {
+    var pending = MATCHES.filter(function(m) {
+      return m.round === ROUND_LABELS[i] && m.bw < 0 &&
+             m.p1.name.indexOf('FILL') < 0 && m.p2.name.indexOf('FILL') < 0 &&
+             m.p1.name !== 'TBD' && m.p2.name !== 'TBD';
+    });
+    if (pending.length > 0) return i;
+  }
+  return ROUND_LABELS.length - 1;
+}
+
+function selectListRound(idx) {
+  LIST_ROUND_IDX = idx;
+  renderListView();
+}
+
+function renderListView() {
+  var panel = document.getElementById('listView');
+  if (!panel) return;
+
+  var gender = (typeof CURRENT_GENDER !== 'undefined') ? CURRENT_GENDER : 'm';
+  var isBo3  = (gender === 'f');
+
+  // ── Onglets rounds ──
+  var tabsHtml = '<div class="lv-rounds">';
+  ROUND_LABELS.forEach(function(r, i) {
+    var count = MATCHES.filter(function(m) { return m.round === r; }).length;
+    var pending = MATCHES.filter(function(m) {
+      return m.round === r && m.bw < 0 &&
+             m.p1.name.indexOf('FILL') < 0 && m.p2.name !== 'TBD';
+    }).length;
+    var activeClass = (i === LIST_ROUND_IDX) ? ' active' : '';
+    var badge = pending > 0 ?
+      '<span class="lv-rtab-count">(' + pending + '⏳)</span>' : '';
+    tabsHtml += '<button class="lv-rtab' + activeClass + '" onclick="selectListRound(' + i + ')">' +
+      ROUND_SHORT[i] + badge + '</button>';
+  });
+  tabsHtml += '</div>';
+
+  // ── Matchs du round sélectionné ──
+  var round = ROUND_LABELS[LIST_ROUND_IDX];
+  var roundMatches = MATCHES.filter(function(m) {
+    return m.round === round &&
+           m.p1.name.indexOf('FILL') < 0 &&
+           m.p2.name.indexOf('FILL') < 0 &&
+           m.p1.name !== 'TBD' &&
+           m.p2.name !== 'TBD';
+  });
+
+  var matchesHtml = '<div class="lv-matches">';
+  if (roundMatches.length === 0) {
+    matchesHtml += '<div style="text-align:center;padding:40px 20px;color:rgba(245,237,216,.3);font-size:14px">Aucun match pour ce round</div>';
+  }
+
+  roundMatches.forEach(function(m, idx) {
+    var isPending = m.bw < 0;
+    var winner    = m.bw;  // 0=p1, 1=p2, -1=pending
+    var cardClass = isPending ? 'lv-card pending' : 'lv-card done';
+    var onclick   = isPending ? ' onclick="lvOpenMatch(this)" data-midx="' + MATCHES.indexOf(m) + '"' : '';
+
+    // Scores par set
+    var scores = parseScoreSets(m.bs || '');
+
+    function playerRow(p, side, isWinner) {
+      var flag   = getFlagEmoji ? getFlagEmoji(p.nat) : '';
+      var seed   = p.seed ? '<span class="lv-seed">[' + p.seed + ']</span>' : '<span class="lv-seed"></span>';
+      var name   = p.name.replace(' ', ' ').split(' ');
+      // Nom court: Prénom initial + NOM
+      var displayName = name.length > 1 ?
+        name[0][0] + '. ' + name.slice(1).join(' ') :
+        p.name;
+      var winClass = isWinner ? ' winner' : '';
+
+      // Score de ce joueur
+      var scoreStr = '';
+      if (!isPending && scores.length > 0) {
+        scoreStr = scores.map(function(s) {
+          return side === 0 ? s.p1 : s.p2;
+        }).join(' ');
+      } else if (isPending) {
+        scoreStr = '';
+      }
+
+      return '<div class="lv-player' + winClass + '">' +
+        '<span class="lv-flag">' + flag + '</span>' +
+        seed +
+        '<span class="lv-name">' + displayName + '</span>' +
+        (isPending ? '<span class="lv-pending-badge">À venir</span>' :
+          '<span class="lv-score">' + scoreStr + '</span>') +
+        '</div>';
+    }
+
+    var halfLabel = m.half === 'top' ? 'Tableau haut' : 'Tableau bas';
+
+    matchesHtml += '<div class="' + cardClass + '"' + onclick + '>' +
+      '<div class="lv-half">' + halfLabel + '</div>' +
+      '<div class="lv-players">' +
+        playerRow(m.p1, 0, winner === 0) +
+        '<hr class="lv-sep">' +
+        playerRow(m.p2, 1, winner === 1) +
+      '</div>';
+
+    // Score spécial Ab/WO
+    if (!isPending && m.bs && (m.bs.indexOf('Ab') >= 0 || m.bs === 'WO')) {
+      matchesHtml += '<div class="lv-special">' + m.bs + '</div>';
+    }
+
+    matchesHtml += '</div>';
+  });
+
+  matchesHtml += '</div>';
+
+  panel.innerHTML = tabsHtml + matchesHtml;
+}
+
+function parseScoreSets(scoreStr) {
+  if (!scoreStr || scoreStr === 'WO') return [];
+  // Supprimer les Ab
+  var clean = scoreStr.replace(/\s*Ab$/i, '').trim();
+  if (!clean) return [];
+  var sets = clean.split(' ');
+  return sets.map(function(s) {
+    // format: "6/4" ou "7/6(3)"
+    var tb = '';
+    var tbMatch = s.match(/\((\d+)\)/);
+    if (tbMatch) {
+      tb = '(' + tbMatch[1] + ')';
+      s = s.replace(/\(\d+\)/, '');
+    }
+    var parts = s.split('/');
+    if (parts.length !== 2) return { p1: s, p2: '' };
+    return { p1: parts[0] + tb, p2: parts[1] };
+  });
+}
+
+function lvOpenMatch(card) {
+  // Ouvrir la modal de saisie pour ce match
+  var idx = parseInt(card.getAttribute('data-midx'));
+  if (!isNaN(idx)) openModal && openModal(idx);
+}
+
+// Mettre à jour la vue liste après saisie d'un score
+var _origSaveScore = typeof saveScore === 'function' ? saveScore : null;
+function lvRefreshIfActive() {
+  if (LIST_VIEW_ACTIVE) renderListView();
+}
+
 </script>
+
+<!-- ═══ TOGGLE VUE MOBILE ═══ -->
+<button id="viewToggle" onclick="toggleListView()" aria-label="Basculer entre vue bracket et vue liste">
+  <span id="viewToggleIcon">☰</span> <span id="viewToggleLabel">Liste</span>
+</button>
 
 <!-- ═══ PWA INSTALL BANNER ═══ -->
 <div id="pwa-install" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
