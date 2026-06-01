@@ -6,6 +6,12 @@
 <title>Grand Chelem 2026 — Tableau Interactif</title>
 <meta name="description" content="Tableau interactif des 4 Grands Chelems 2026. Suivez les résultats, saisissez les scores et simulez les matchs à venir.">
 <meta name="theme-color" id="themeColor" content="#1A0F08">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grand Chelem">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=700;900&family=DM+Sans:wght=300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -2699,6 +2705,108 @@ applyTheme(TOURNAMENTS['rg']);
 })();
 updateStats(); render();
 
+</script>
+
+<!-- ═══ PWA INSTALL BANNER ═══ -->
+<div id="pwa-install" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#C85B2A,#e07040);color:#fff;padding:14px 20px;border-radius:14px;
+  z-index:9999;box-shadow:0 4px 20px rgba(200,91,42,0.5);display:none;align-items:center;gap:12px;
+  font-family:'DM Sans',sans-serif;font-size:14px;max-width:320px;width:90%;">
+  <span style="font-size:22px">🎾</span>
+  <div style="flex:1">
+    <div style="font-weight:600">Installer l'application</div>
+    <div style="font-size:12px;opacity:0.85">Accès rapide depuis l'écran d'accueil</div>
+  </div>
+  <button onclick="pwaDismiss()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+    border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px">Plus tard</button>
+  <button onclick="pwaInstall()" style="background:#fff;border:none;color:#C85B2A;
+    border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:13px">Installer</button>
+</div>
+
+<!-- ═══ UPDATE TOAST ═══ -->
+<div id="pwa-update" style="display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);
+  background:#1e293b;color:#fff;padding:12px 18px;border-radius:12px;z-index:9999;
+  box-shadow:0 4px 16px rgba(0,0,0,0.4);font-family:'DM Sans',sans-serif;font-size:13px;
+  align-items:center;gap:10px;max-width:300px;width:88%;">
+  <span>🔄 Nouvelle version disponible</span>
+  <button onclick="pwaReload()" style="background:#C85B2A;border:none;color:#fff;
+    border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px;margin-left:8px">Mettre à jour</button>
+</div>
+
+<script>
+// ── Service Worker ──
+var _swReg = null;
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function(reg) {
+      _swReg = reg;
+      reg.addEventListener('updatefound', function() {
+        var nw = reg.installing;
+        nw.addEventListener('statechange', function() {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            var el = document.getElementById('pwa-update');
+            if (el) { el.style.display = 'flex'; }
+          }
+        });
+      });
+    }).catch(function(e) { console.warn('SW:', e); });
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      window.location.reload();
+    });
+  });
+}
+
+// ── Install prompt ──
+var _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _deferredPrompt = e;
+  // Afficher le banner après 3s si pas déjà installé
+  if (!localStorage.getItem('pwa-dismissed')) {
+    setTimeout(function() {
+      var el = document.getElementById('pwa-install');
+      if (el) el.style.display = 'flex';
+    }, 3000);
+  }
+});
+
+window.addEventListener('appinstalled', function() {
+  var el = document.getElementById('pwa-install');
+  if (el) el.style.display = 'none';
+  _deferredPrompt = null;
+  localStorage.removeItem('pwa-dismissed');
+});
+
+function pwaInstall() {
+  if (_deferredPrompt) {
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') {
+        document.getElementById('pwa-install').style.display = 'none';
+      }
+      _deferredPrompt = null;
+    });
+  }
+}
+
+function pwaDismiss() {
+  document.getElementById('pwa-install').style.display = 'none';
+  localStorage.setItem('pwa-dismissed', '1');
+}
+
+function pwaReload() {
+  if (_swReg && _swReg.waiting) {
+    _swReg.waiting.postMessage('skipWaiting');
+  } else {
+    window.location.reload();
+  }
+}
+
+// ── Mettre à jour theme-color dynamiquement selon le tournoi ──
+function updateThemeColor(color) {
+  var meta = document.getElementById('themeColor');
+  if (meta) meta.content = color;
+}
 </script>
 </body>
 </html>
