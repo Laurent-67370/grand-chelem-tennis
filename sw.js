@@ -3,7 +3,7 @@
 // Cache-first pour offline, network-first pour updates
 // ═══════════════════════════════════════════════════════
 
-const CACHE_NAME = 'grand-chelem-v1';
+const CACHE_NAME = 'grand-chelem-v2';
 const BASE = '/grand-chelem-tennis/';
 
 const STATIC_ASSETS = [
