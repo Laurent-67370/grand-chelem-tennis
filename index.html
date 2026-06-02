@@ -1182,7 +1182,7 @@ function gS(i){return OV[i]!==undefined?OV[i].score:MATCHES[i].bs;}
 function isSim(i){return OV[i]&&OV[i].sim;}
 
 // ════ STORAGE ══════════════════════════════════════════════
-function save(){lvRefreshIfActive();try{var k='gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':'');localStorage.setItem(k,JSON.stringify(OV));}catch(e){}}
+function save(){if(typeof lvRefreshIfActive==='function')lvRefreshIfActive();try{var k='gc_ov_'+CURRENT_TOURNAMENT+(CURRENT_GENDER==='f'?'_f':'');localStorage.setItem(k,JSON.stringify(OV));}catch(e){}}
 function load(){try{var d=localStorage.getItem('gc_ov_rg');if(d)OV=JSON.parse(d);}catch(e){}}
 
 function updateStats(){
@@ -2950,7 +2950,7 @@ function toggleListView() {
     label.textContent = 'Liste';
     bv.style.display  = '';
     lv.classList.remove('visible');
-    buildBracket && buildBracket();
+    buildHalf && buildHalf();
   }
 }
 
@@ -2985,7 +2985,7 @@ function renderListView() {
     var count = MATCHES.filter(function(m) { return m.round === r; }).length;
     var pending = MATCHES.filter(function(m) {
       return m.round === r && m.bw < 0 &&
-             m.p1.name.indexOf('FILL') < 0 && m.p2.name !== 'TBD';
+             m.p1.name.indexOf('FILL') < 0 && m.p2.name.indexOf('FILL') < 0 && m.p2.name !== 'TBD';
     }).length;
     var activeClass = (i === LIST_ROUND_IDX) ? ' active' : '';
     var badge = pending > 0 ?
@@ -3020,7 +3020,7 @@ function renderListView() {
     var scores = parseScoreSets(m.bs || '');
 
     function playerRow(p, side, isWinner) {
-      var flag   = getFlagEmoji ? getFlagEmoji(p.nat) : '';
+      var flag   = gf(p.nat);
       var seed   = p.seed ? '<span class="lv-seed">[' + p.seed + ']</span>' : '<span class="lv-seed"></span>';
       var name   = p.name.replace(' ', ' ').split(' ');
       // Nom court: Prénom initial + NOM
